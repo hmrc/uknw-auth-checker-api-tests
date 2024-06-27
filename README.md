@@ -1,6 +1,4 @@
 
-**This is the template README. Please update this with project specific content.**
-
 # uknw-auth-checker-api-tests
 
 Notice of Presentation API tests.
@@ -8,12 +6,6 @@ Notice of Presentation API tests.
 ## Pre-requisites
 
 ### Services
-
-Start Mongo Docker container as follows:
-
-```bash
-docker run --rm -d -p 27017:27017 --name mongo percona/percona-server-mongodb:5.0
-```
 
 Start `UKNW_AUTH_CHECKER_API` services as follows:
 
