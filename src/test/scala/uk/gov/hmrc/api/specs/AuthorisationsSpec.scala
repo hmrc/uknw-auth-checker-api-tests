@@ -22,6 +22,17 @@ class AuthorisationsSpec extends BaseSpec {
 
   Feature("Example of creating bearer token") {
 
+    Scenario("Checking bearer token") {
+      When("Getting bearer token")
+      val authBearerToken: String = authHelper.getAuthBearerToken
+
+      Then("Said Bearer Token shouldn't contain an error")
+      authBearerToken shouldNot contain("Could not obtain auth bearer token. Auth Service Response:")
+    }
+  }
+
+  Feature("200 case Scenarios") {
+
     Scenario("Happy path with single EORI - 200 OK") {
       Given("a bearer token")
       val authBearerToken: String = authHelper.getAuthBearerToken
