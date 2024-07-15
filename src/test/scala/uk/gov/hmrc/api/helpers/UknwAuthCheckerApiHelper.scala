@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.api.helpers
 
+import play.api.libs.json.JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
@@ -23,9 +24,9 @@ class UknwAuthCheckerApiHelper {
 
   val uknwAuthCheckerApiService: UknwAuthCheckerApiService = new UknwAuthCheckerApiService
 
-  def postAuthorisations(authBearerToken: String): Int = {
+  def postAuthorisations(authBearerToken: String, individualPayload: JsValue): Int = {
     val response: StandaloneWSRequest#Self#Response =
-      uknwAuthCheckerApiService.authorisations(authBearerToken)
+      uknwAuthCheckerApiService.authorisations(authBearerToken, individualPayload)
     response.status
   }
 

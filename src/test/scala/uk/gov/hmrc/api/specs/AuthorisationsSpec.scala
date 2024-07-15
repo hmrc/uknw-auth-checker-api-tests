@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.api.specs
 
+import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
+
 class AuthorisationsSpec extends BaseSpec {
 
   Feature("Example of creating bearer token") {
@@ -23,9 +25,11 @@ class AuthorisationsSpec extends BaseSpec {
     Scenario("Happy path - 200 OK") {
       Given("a bearer token")
       val authBearerToken: String = authHelper.getAuthBearerToken
+      And("and payload")
+      val individualPayload = getJsonFile("authRequest200_single.json")
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val responseStatus = authCheckerApiHelper.postAuthorisations(authBearerToken)
+      val responseStatus = authCheckerApiHelper.postAuthorisations(authBearerToken, individualPayload)
 
       Then("I am returned a status code 200")
       responseStatus shouldBe 200

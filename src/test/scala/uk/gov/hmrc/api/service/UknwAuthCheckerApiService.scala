@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.api.service
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.client.HttpClient
 import uk.gov.hmrc.api.conf.TestConfiguration
-import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -29,8 +28,7 @@ class UknwAuthCheckerApiService extends HttpClient {
 
   val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
 
-  def authorisations(authToken: String): StandaloneWSRequest#Self#Response = {
-    val individualPayload = getJsonFile("authRequest200_single.json")
+  def authorisations(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response = {
     Await.result(
       post(
         authorisationsUrl,
