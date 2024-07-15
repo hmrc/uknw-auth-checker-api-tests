@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.specs
+package uk.gov.hmrc.api.utils
 
-import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.GivenWhenThen
-import uk.gov.hmrc.api.helpers.{AuthHelper, UknwAuthCheckerApiHelper}
+import play.api.libs.json.{JsValue, Json}
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
-  val authHelper           = new AuthHelper
-  val authCheckerApiHelper = new UknwAuthCheckerApiHelper
+import scala.io.Source
+
+object JsonGetter {
+  private val basePath = "/requests/"
+
+  def getJsonFile(fileName: String): JsValue = {
+    val source = Source.fromURL(getClass.getResource(basePath + fileName))
+    val lines  =
+      try Json.parse(source.mkString)
+      finally source.close()
+    lines
+  }
 }

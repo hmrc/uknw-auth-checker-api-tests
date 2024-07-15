@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.specs
+package uk.gov.hmrc.api.helpers
 
-import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.GivenWhenThen
-import uk.gov.hmrc.api.helpers.{AuthHelper, UknwAuthCheckerApiHelper}
+import play.api.libs.json.JsValue
+import play.api.libs.ws.StandaloneWSRequest
+import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
-  val authHelper           = new AuthHelper
-  val authCheckerApiHelper = new UknwAuthCheckerApiHelper
+class UknwAuthCheckerApiHelper {
+
+  val uknwAuthCheckerApiService: UknwAuthCheckerApiService = new UknwAuthCheckerApiService
+
+  def postAuthorisations(authBearerToken: String, individualPayload: JsValue): Int = {
+    val response: StandaloneWSRequest#Self#Response =
+      uknwAuthCheckerApiService.authorisations(authBearerToken, individualPayload)
+    response.status
+  }
+
 }
