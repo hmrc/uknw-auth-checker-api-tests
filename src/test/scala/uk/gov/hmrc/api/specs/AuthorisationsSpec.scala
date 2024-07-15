@@ -26,7 +26,7 @@ class AuthorisationsSpec extends BaseSpec {
       Given("a bearer token")
       val authBearerToken: String = authHelper.getAuthBearerToken
       And("and payload")
-      val individualPayload = getJsonFile("authRequest200_single.json")
+      val individualPayload       = getJsonFile("authRequest200_single.json")
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val responseStatus = authCheckerApiHelper.postAuthorisations(authBearerToken, individualPayload)

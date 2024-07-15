@@ -28,7 +28,7 @@ class UknwAuthCheckerApiService extends HttpClient {
 
   val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
 
-  def authorisations(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response = {
+  def authorisations(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
     Await.result(
       post(
         authorisationsUrl,
@@ -39,6 +39,5 @@ class UknwAuthCheckerApiService extends HttpClient {
       ),
       10.seconds
     )
-  }
 
 }
