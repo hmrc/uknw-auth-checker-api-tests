@@ -22,6 +22,6 @@ import org.scalatest.GivenWhenThen
 import uk.gov.hmrc.api.helpers.{AuthHelper, UknwAuthCheckerApiHelper}
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
-  val authHelper                = new AuthHelper
-  val authCheckerApiHelper      = new UknwAuthCheckerApiHelper
+  val authHelper           = new AuthHelper
+  val authCheckerApiHelper = new UknwAuthCheckerApiHelper
 }

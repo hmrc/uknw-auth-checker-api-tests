@@ -11,7 +11,7 @@ class AuthorisationsSpec extends BaseSpec {
 
     Scenario("Happy path - 200 OK") {
       Given("a bearer token")
-      val authBearerToken: String    = authHelper.getAuthBearerToken
+      val authBearerToken: String = authHelper.getAuthBearerToken
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val responseStatus = authCheckerApiHelper.postAuthorisations(authBearerToken)

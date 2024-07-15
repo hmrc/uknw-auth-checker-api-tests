@@ -25,7 +25,7 @@ object JsonGetter {
 
   def getJsonFile(fileName: String): JsValue = {
     val source = Source.fromURL(getClass.getResource(basePath + fileName))
-    val lines =
+    val lines  =
       try Json.parse(source.mkString)
       finally source.close()
     lines

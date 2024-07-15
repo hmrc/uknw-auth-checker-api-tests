@@ -9,7 +9,7 @@ import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class UknwAuthCheckerApiService extends HttpClient{
+class UknwAuthCheckerApiService extends HttpClient {
 
   val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
 
