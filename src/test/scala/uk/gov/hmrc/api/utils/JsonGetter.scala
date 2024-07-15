@@ -21,10 +21,9 @@ import play.api.libs.json.{JsValue, Json}
 import scala.io.Source
 
 object JsonGetter {
-  private val basePath = "/requests/"
 
-  def getJsonFile(fileName: String): JsValue = {
-    val source = Source.fromURL(getClass.getResource(basePath + fileName))
+  def getJsonFile(filePath: String): JsValue = {
+    val source = Source.fromURL(getClass.getResource(filePath))
     val lines  =
       try Json.parse(source.mkString)
       finally source.close()
