@@ -22,17 +22,46 @@ class AuthorisationsSpec extends BaseSpec {
 
   Feature("Example of creating bearer token") {
 
-    Scenario("Happy path - 200 OK") {
+    Scenario("Checking bearer token") {
+      When("Getting bearer token")
+      val authBearerToken: String = authHelper.getAuthBearerToken
+
+      Then("Said Bearer Token shouldn't contain an error")
+      authBearerToken shouldNot contain("Could not obtain auth bearer token. Auth Service Response:")
+    }
+  }
+
+  Feature("200 case Scenarios") {
+
+    Scenario("Happy path with single EORI - 200 OK") {
+      Given("a bearer token")
+      val authBearerToken: String = authHelper.getAuthBearerToken
+
+      And("and payload")
+      val individualPayload = getJsonFile("/requests/authRequest200_single.json")
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(authBearerToken, individualPayload)
+      val expected = getJsonFile("/responses/authResponse200_single.json").toString
+
+      Then("I am returned a status code 200")
+      response.status shouldBe 200
+      response.body   shouldBe expected
+    }
+
+    Scenario("Happy path with multiple EORIs - 200 OK") {
       Given("a bearer token")
       val authBearerToken: String = authHelper.getAuthBearerToken
       And("and payload")
-      val individualPayload       = getJsonFile("authRequest200_single.json")
+      val individualPayload       = getJsonFile("/requests/authRequest200_multiple.json")
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val responseStatus = authCheckerApiHelper.postAuthorisations(authBearerToken, individualPayload)
+      val response = checkerApiService.authorisations(authBearerToken, individualPayload)
+      val expected = getJsonFile("/responses/authResponse200_multiple.json").toString
 
       Then("I am returned a status code 200")
-      responseStatus shouldBe 200
+      response.status shouldBe 200
+      response.body   shouldBe expected
     }
   }
 
