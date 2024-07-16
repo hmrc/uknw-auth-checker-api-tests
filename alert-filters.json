@@ -1,0 +1,12 @@
+{
+  "add": [
+    {
+      "reason": "X-Content-Type-Options Header Missing",
+      "contextId": 1,
+      "url": "http://localhost:9070/authorisations",
+      "ruleId": 10021,
+      "urlIsRegex": "true",
+      "newLevel": 1
+    }
+  ]
+}

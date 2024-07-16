@@ -20,31 +20,38 @@ import akka.actor.ActorSystem
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
+import uk.gov.hmrc.api.conf.ZapConfiguration._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait HttpClient {
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  val wsClient: StandaloneAhcWSClient   = StandaloneAhcWSClient()
   implicit val ec: ExecutionContext     = ExecutionContext.global
 
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
-    wsClient
+  val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
+
+  private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest#Self = {
+    val request = wsClient
       .url(url)
       .withHttpHeaders(headers: _*)
+    if (isEnabled) {
+      request.withProxyServer(proxyServer)
+    } else {
+      request
+    }
+  }
+
+  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+    defaultRequest(url, headers: _*)
       .get()
 
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
-    wsClient
-      .url(url)
-      .withHttpHeaders(headers: _*)
+    defaultRequest(url, headers: _*)
       .post(bodyAsJson)
 
   def delete(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
-    wsClient
-      .url(url)
-      .withHttpHeaders(headers: _*)
+    defaultRequest(url, headers: _*)
       .delete()
 
 }

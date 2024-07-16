@@ -1,5 +1,6 @@
 .*
 
+dast-config-manager
 !.gitignore
 !.scalafmt.conf
 bin
