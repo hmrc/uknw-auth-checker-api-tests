@@ -106,4 +106,79 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
   }
 
+  Feature("405 case Scenarios") {
+
+    Scenario("405, GET") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a GET authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_get(authBearerToken)
+
+      Then("I am returned a status code 403")
+      response.status shouldBe 405
+      response.body   shouldBe expectedRes405_notAllowed
+    }
+
+    Scenario("405, DELETE") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a DELETE authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_delete(authBearerToken)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 405
+      response.body   shouldBe expectedRes405_notAllowed
+    }
+
+    Scenario("405, HEAD") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a HEAD authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_head(authBearerToken)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 405
+    }
+
+    Scenario("405, OPTION") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a OPTION authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_option(authBearerToken)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 405
+      response.body   shouldBe expectedRes405_notAllowed
+    }
+
+    Scenario("405, PATCH") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a PATCH authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_patch(authBearerToken)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 405
+      response.body   shouldBe expectedRes405_notAllowed
+    }
+
+    Scenario("405, PUT") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations405_put(authBearerToken)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 405
+      response.body   shouldBe expectedRes405_notAllowed
+    }
+
+  }
+
 }

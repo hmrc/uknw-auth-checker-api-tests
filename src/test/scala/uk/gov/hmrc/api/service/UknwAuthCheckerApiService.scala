@@ -51,4 +51,70 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
+  def authorisations405_get(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      get(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations405_delete(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      delete(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations405_head(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      head(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations405_option(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      option(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations405_patch(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      patch(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations405_put(authToken: String): StandaloneWSRequest#Self#Response =
+    Await.result(
+      put(
+        authorisationsUrl,
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
 }
