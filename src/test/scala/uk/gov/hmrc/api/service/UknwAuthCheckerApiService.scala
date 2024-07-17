@@ -40,4 +40,15 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
+  def authorisations401(individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+    Await.result(
+      post(
+        authorisationsUrl,
+        Json.stringify(individualPayload),
+        ("Content-Type", "application/json"),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
 }
