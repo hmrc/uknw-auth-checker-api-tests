@@ -16,11 +16,8 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 import uk.gov.hmrc.api.helpers.AuthHelper
 import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
-
-import java.lang.Thread.sleep
 
 class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
@@ -104,7 +101,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 403")
       response.status shouldBe 403
-      response.body   shouldBe expected403_forbidden
+      response.body   shouldBe expectedRes403_forbidden
     }
 
   }
