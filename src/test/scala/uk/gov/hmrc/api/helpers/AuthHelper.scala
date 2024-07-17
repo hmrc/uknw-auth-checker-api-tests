@@ -20,7 +20,7 @@ import org.scalatest.Assertions.fail
 import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.service.AuthService
 
-class AuthHelper {
+trait AuthHelper {
 
   val authAPI: AuthService = new AuthService
 

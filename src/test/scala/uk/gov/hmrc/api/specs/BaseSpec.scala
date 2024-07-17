@@ -19,10 +19,20 @@ package uk.gov.hmrc.api.specs
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.GivenWhenThen
-import uk.gov.hmrc.api.helpers.AuthHelper
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
+import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
-  val authHelper        = new AuthHelper
   val checkerApiService = new UknwAuthCheckerApiService
+
+  // Req
+  val req200_single: JsValue   = getJsonFile("/requests/authRequest200_single.json")
+  val req200_multiple: JsValue = getJsonFile("/requests/authRequest200_multiple.json")
+  val req403_single: JsValue   = getJsonFile("/requests/authRequest403_single.json")
+
+  // Res
+  val expectedRes401_invalid: String     = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
+  val expectedRes401_notSupplied: String = """{"code":"UNAUTHORIZED","message":"Bearer token not supplied"}"""
+  val expected403_forbidden: String      = """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
 }
