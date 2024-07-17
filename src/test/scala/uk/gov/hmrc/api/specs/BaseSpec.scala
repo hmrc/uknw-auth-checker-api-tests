@@ -34,5 +34,5 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   // Res
   val expectedRes401_invalid: String     = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
   val expectedRes401_notSupplied: String = """{"code":"UNAUTHORIZED","message":"Bearer token not supplied"}"""
-  val expected403_forbidden: String      = """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
+  val expectedRes403_forbidden: String      = """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
 }
