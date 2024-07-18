@@ -28,7 +28,7 @@ class UknwAuthCheckerApiService extends HttpClient {
 
   val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
 
-  def authorisations(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+  def authorisations200(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
     Await.result(
       post(
         authorisationsUrl,
@@ -111,6 +111,33 @@ class UknwAuthCheckerApiService extends HttpClient {
       put(
         authorisationsUrl,
         ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations406_invalidAccept(
+    authToken: String,
+    individualPayload: JsValue
+  ): StandaloneWSRequest#Self#Response =
+    Await.result(
+      post(
+        authorisationsUrl,
+        Json.stringify(individualPayload),
+        ("Content-Type", "application/json"),
+        ("Authorization", authToken),
+        ("Accept", "invalid")
+      ),
+      10.seconds
+    )
+
+  def authorisations500(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+    Await.result(
+      post(
+        authorisationsUrl,
+        Json.stringify(individualPayload),
+        ("Content-Type", "invalid"),
         ("Authorization", authToken),
         ("Accept", "application/vnd.hmrc.1.0+json")
       ),

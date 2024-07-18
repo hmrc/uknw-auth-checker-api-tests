@@ -41,7 +41,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       And("and payload")
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(authBearerToken, req200_single)
+      val response = checkerApiService.authorisations200(authBearerToken, req200_single)
       val expected = getJsonFile("/responses/authResponse200_single.json").toString
 
       Then("I am returned a status code 200")
@@ -55,7 +55,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       And("and payload")
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(authBearerToken, req200_multiple)
+      val response = checkerApiService.authorisations200(authBearerToken, req200_multiple)
       val expected = getJsonFile("/responses/authResponse200_multiple.json").toString
 
       Then("I am returned a status code 200")
@@ -64,14 +64,14 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
     }
   }
 
-  Feature("401 case Scenarios") {
+  Feature("401, UNAUTHORIZED case scenarios") {
 
     Scenario("Invalid Bearer Token") {
       Given("an invalid bearer token")
       val anInvalidToken: String = "Invalid Token"
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(anInvalidToken, req200_multiple)
+      val response = checkerApiService.authorisations200(anInvalidToken, req200_multiple)
 
       Then("I am returned a status code 401")
       response.status shouldBe 401
@@ -90,14 +90,14 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
   }
 
-  Feature("403 case Scenarios") {
+  Feature("403, FORBIDDEN case Scenarios") {
 
     Scenario("Forcing a 403 response") {
       Given("Valid bearer token")
       val authBearerToken: String = getAuthBearerToken
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(authBearerToken, req403_single)
+      val response = checkerApiService.authorisations200(authBearerToken, req403_single)
 
       Then("I am returned a status code 403")
       response.status shouldBe 403
@@ -106,7 +106,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
   }
 
-  Feature("405 case Scenarios") {
+  Feature("405, METHOD_NOT_ALLOWED case scenarios") {
 
     Scenario("405, GET") {
       Given("Valid bearer token")
@@ -179,6 +179,35 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       response.body   shouldBe expectedRes405_notAllowed
     }
 
+  }
+
+  Feature("406, NOT_ACCEPTABLE case scenarios") {
+
+    Scenario("406 Accept") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations406_invalidAccept(authBearerToken, req200_single)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 406
+      response.body   shouldBe expectedRes406
+    }
+  }
+
+  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") {
+    Scenario("500, wrong content type") {
+      Given("Valid bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations500(authBearerToken, req200_single)
+
+      Then("I am returned a status code 405")
+      response.status shouldBe 500
+      response.body   shouldBe expectedRes500
+    }
   }
 
 }
