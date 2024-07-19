@@ -35,7 +35,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   val req400_multipleEori: JsValue = getJsonFile("/requests/authRequest400_multipleEori.json")
   val req400_mixedErrors: JsValue  = getJsonFile("/requests/authRequest400_mixedErrors.json")
   val req400_missing: JsValue      = getJsonFile("/requests/authRequest400_missingBits.json")
-  val req403_single: JsValue       = getJsonFile("/requests/authRequest400_singleEori.json")
+  val req403_single: JsValue       = getJsonFile("/requests/authRequest403_single.json")
 
   // Res
   val expectedRes200_single: String   = getJsonFile("/responses/authResponse200_single.json").toString
@@ -50,7 +50,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   val expectedRes400_multipleEori: String =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"},{"code":"INVALID_FORMAT","message":"EFGH000000000200 is not a supported EORI number","path":"eoris"}]}"""
   val expectedRes400_mixedErrors: String  =
-    """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"},{"code":"INVALID_FORMAT","message":"2024-02-xx is not a valid date in the format YYYY-MM-DD"""
+    """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"},{"code":"INVALID_FORMAT","message":"2024-02-xx is not a valid date in the format YYYY-MM-DD","path":"date"}]}"""
   val expectedRes400_missing: String      =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"date field missing from JSON","path":"date"},{"code":"INVALID_FORMAT","message":"eoris field missing from JSON","path":"eoris"}]}"""
   val expectedRes401_invalid: String      = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
