@@ -17,7 +17,6 @@
 package uk.gov.hmrc.api.specs
 
 import uk.gov.hmrc.api.helpers.AuthHelper
-import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
 
 class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
