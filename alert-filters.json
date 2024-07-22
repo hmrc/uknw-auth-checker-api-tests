@@ -7,6 +7,14 @@
       "ruleId": 10021,
       "urlIsRegex": "true",
       "newLevel": 0
+    },
+    {
+      "reason": "Information Disclosure - Debug Error Messages",
+      "contextId": 1,
+      "url": "http://localhost:9070/authorisations",
+      "ruleId": 10023,
+      "urlIsRegex": "true",
+      "newLevel": -1
     }
   ]
 }
