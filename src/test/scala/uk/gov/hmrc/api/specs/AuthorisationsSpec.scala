@@ -72,7 +72,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_dateForm)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_dateForm
     }
@@ -86,7 +86,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_invalidForm)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_invalidForm
     }
@@ -100,7 +100,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_singleEori)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_singleEori
     }
@@ -114,7 +114,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_multipleEori)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_multipleEori
     }
@@ -128,7 +128,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_mixedErrors)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_mixedErrors
     }
@@ -142,9 +142,37 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations200(authBearerToken, req400_missing)
 
-      Then("I am returned a status code 200")
+      Then("I am returned a status code 400")
       response.status shouldBe 400
       response.body   shouldBe expectedRes400_missing
+    }
+
+    Scenario("400 Too many EORIS (3001)") {
+      Given("a bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      And("and payload")
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations200(authBearerToken, req400_tooMany)
+
+      Then("I am returned a status code 400")
+      response.status shouldBe 400
+      response.body   shouldBe expectedRes400_wrongNumberOfEoris
+    }
+
+    Scenario("400 Not enough EORIS (0)") {
+      Given("a bearer token")
+      val authBearerToken: String = getAuthBearerToken
+
+      And("and payload")
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations200(authBearerToken, req400_noEoris)
+
+      Then("I am returned a status code 400")
+      response.status shouldBe 400
+      response.body   shouldBe expectedRes400_wrongNumberOfEoris
     }
   }
 
