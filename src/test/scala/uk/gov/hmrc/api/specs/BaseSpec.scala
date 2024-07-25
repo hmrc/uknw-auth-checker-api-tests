@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.specs
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.GivenWhenThen
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
 
@@ -35,26 +35,35 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   val req400_multipleEori: JsValue = getJsonFile("/requests/authRequest400_multipleEori.json")
   val req400_mixedErrors: JsValue  = getJsonFile("/requests/authRequest400_mixedErrors.json")
   val req400_missing: JsValue      = getJsonFile("/requests/authRequest400_missingBits.json")
-  val req403_single: JsValue       = getJsonFile("/requests/authRequest403_single.json")
+  val req400_tooMany: JsValue      = getJsonFile("/requests/authRequest400_tooManyEoris.json")
+  val req400_noEoris: JsValue      = Json.parse("""{
+                                                  |  "date": "2024-02-08",
+                                                  |  "eoris" : []
+                                                  |}""".stripMargin)
+
+  val req403_single: JsValue = getJsonFile("/requests/authRequest403_single.json")
 
   // Res
   val expectedRes200_single: String   = getJsonFile("/responses/authResponse200_single.json").toString
   val expectedRes200_multiple: String = getJsonFile("/responses/authResponse200_multiple.json").toString
 
-  val expectedRes400_dateForm: String     =
+  val expectedRes400_dateForm: String           =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"2024-02-xx is not a valid date in the format YYYY-MM-DD","path":"date"}]}"""
-  val expectedRes400_invalidForm: String  =
+  val expectedRes400_invalidForm: String        =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"date field missing from JSON","path":"date"}]}"""
-  val expectedRes400_singleEori: String   =
+  val expectedRes400_singleEori: String         =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"2024-02-xx is not a valid date in the format YYYY-MM-DD","path":"date"}]}"""
-  val expectedRes400_multipleEori: String =
+  val expectedRes400_multipleEori: String       =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"},{"code":"INVALID_FORMAT","message":"EFGH000000000200 is not a supported EORI number","path":"eoris"}]}"""
-  val expectedRes400_mixedErrors: String  =
+  val expectedRes400_mixedErrors: String        =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"},{"code":"INVALID_FORMAT","message":"2024-02-xx is not a valid date in the format YYYY-MM-DD","path":"date"}]}"""
-  val expectedRes400_missing: String      =
+  val expectedRes400_missing: String            =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"date field missing from JSON","path":"date"},{"code":"INVALID_FORMAT","message":"eoris field missing from JSON","path":"eoris"}]}"""
-  val expectedRes401_invalid: String      = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
-  val expectedRes401_notSupplied: String  = """{"code":"UNAUTHORIZED","message":"Bearer token not supplied"}"""
+  val expectedRes400_wrongNumberOfEoris: String =
+    """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"The request payload must contain between 1 and 3000 EORI entries","path":"eoris"}]}"""
+
+  val expectedRes401_invalid: String     = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
+  val expectedRes401_notSupplied: String = """{"code":"UNAUTHORIZED","message":"Bearer token not supplied"}"""
 
   val expectedRes403_forbidden: String  =
     """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
