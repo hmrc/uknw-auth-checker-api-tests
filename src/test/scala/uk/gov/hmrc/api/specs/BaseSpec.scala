@@ -22,8 +22,9 @@ import org.scalatest.GivenWhenThen
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 import uk.gov.hmrc.api.utils.JsonGetter.getJsonFile
+import uk.gov.hmrc.api.utils.JsonReader
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
+trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with JsonReader {
   val checkerApiService = new UknwAuthCheckerApiService
 
   // Req
