@@ -187,7 +187,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 401")
       response.status shouldBe 401
-      response.body   shouldBe expectedRes401_invalid
+      response.body   shouldBe expectedRes401_unauthorized
     }
 
     Scenario("Missing Bearer Token") {
@@ -197,7 +197,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 401")
       response.status shouldBe 401
-      response.body   shouldBe expectedRes401_notSupplied
+      response.body   shouldBe expectedRes401_unauthorized
     }
 
   }
