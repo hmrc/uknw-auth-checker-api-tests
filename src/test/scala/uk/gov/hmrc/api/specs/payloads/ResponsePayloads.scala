@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.api.specs.payloads
 
 import uk.gov.hmrc.api.utils.JsonReader
@@ -7,8 +23,6 @@ trait ResponsePayloads extends JsonReader {
   val expectedRes200_single: String   = getJsonFile("/responses/authResponse200_single.json").toString
   val expectedRes200_multiple: String = getJsonFile("/responses/authResponse200_multiple.json").toString
 
-  val expectedRes400_invalidForm: String        =
-    """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"date field missing from JSON","path":"date"}]}"""
   val expectedRes400_singleEori: String         =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"}]}"""
   val expectedRes400_multipleEori: String       =
@@ -21,10 +35,12 @@ trait ResponsePayloads extends JsonReader {
   val expectedRes401_invalid: String     = """{"code":"UNAUTHORIZED","message":"Invalid bearer token"}"""
   val expectedRes401_notSupplied: String = """{"code":"UNAUTHORIZED","message":"Bearer token not supplied"}"""
 
-  val expectedRes403_forbidden: String  =
+  val expectedRes401_unauthorized: String =
+    """{"code":"UNAUTHORIZED","message":"The bearer token is invalid, missing, or expired"}"""
+  val expectedRes403_forbidden: String    =
     """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
-  val expectedRes405_notAllowed: String = """{"code":"METHOD_NOT_ALLOWED","message":"This method is not supported"}"""
-  val expectedRes406: String            =
+  val expectedRes405_notAllowed: String   = """{"code":"METHOD_NOT_ALLOWED","message":"This method is not supported"}"""
+  val expectedRes406: String              =
     """{"code":"NOT_ACCEPTABLE","message":"Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"}"""
-  val expectedRes500: String            = """{"code":"INTERNAL_SERVER_ERROR","message":"Unexpected internal server error"}"""
+  val expectedRes500: String              = """{"code":"INTERNAL_SERVER_ERROR","message":"Unexpected internal server error"}"""
 }

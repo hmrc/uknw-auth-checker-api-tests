@@ -44,7 +44,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 200")
       response.status shouldBe 200
-      response.body   shouldBe expectedRes200_single
+      response.body   shouldBe expectedRes200_single.replaceFormattedDate(now)
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
@@ -57,25 +57,11 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 200")
       response.status shouldBe 200
-      response.body   shouldBe expectedRes200_multiple
+      response.body   shouldBe expectedRes200_multiple.replaceFormattedDate(now)
     }
   }
 
   Feature("400, BAD_REQUEST case scenarios") {
-
-    Scenario("400 INVALID_FORMAT") {
-      Given("a bearer token")
-      val authBearerToken: String = getAuthBearerToken
-
-      And("and payload")
-
-      When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations200(authBearerToken, req400_invalidField)
-
-      Then("I am returned a status code 400")
-      response.status shouldBe 400
-      response.body   shouldBe expectedRes400_invalidForm
-    }
 
     Scenario("400 Bad Eori") {
       Given("a bearer token")
