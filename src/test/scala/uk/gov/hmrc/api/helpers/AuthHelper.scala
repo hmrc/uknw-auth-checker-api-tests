@@ -22,10 +22,10 @@ import uk.gov.hmrc.api.service.AuthService
 
 trait AuthHelper {
 
-  val authAPI: AuthService = new AuthService
+  val authService: AuthService = new AuthService
 
   def getAuthBearerToken: String = {
-    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authAPI.postLogin
+    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authService.postLogin
     authServiceRequestResponse
       .header("Authorization")
       .getOrElse(fail(s"Could not obtain auth bearer token. Auth Service Response: $authServiceRequestResponse"))
