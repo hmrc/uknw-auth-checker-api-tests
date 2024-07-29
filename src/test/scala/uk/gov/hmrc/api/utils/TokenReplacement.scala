@@ -22,8 +22,7 @@ import java.time.format.DateTimeFormatter
 trait TokenReplacement {
   implicit class TokenReplacer(value: String) {
 
-    def replaceFormattedDate(date: LocalDate): String = {
+    def replaceFormattedDate(date: LocalDate): String =
       value.replace("{{date}}", date.format(DateTimeFormatter.ISO_LOCAL_DATE))
-    }
   }
 }
