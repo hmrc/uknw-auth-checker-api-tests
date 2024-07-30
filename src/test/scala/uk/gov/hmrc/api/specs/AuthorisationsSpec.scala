@@ -44,7 +44,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 200")
       response.status shouldBe 200
-      response.body   shouldBe expectedRes200_single.replaceFormattedDate(now)
+      response.body   shouldBe expectedRes200_single.replaceFormattedDateTime(now)
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
@@ -57,7 +57,7 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
 
       Then("I am returned a status code 200")
       response.status shouldBe 200
-      response.body   shouldBe expectedRes200_multiple.replaceFormattedDate(now)
+      response.body   shouldBe expectedRes200_multiple.replaceFormattedDateTime(now)
     }
   }
 
