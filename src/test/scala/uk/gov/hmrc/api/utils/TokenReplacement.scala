@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.helpers
+package uk.gov.hmrc.api.utils
 
-import org.scalatest.Assertions.fail
-import play.api.libs.ws.StandaloneWSRequest
-import uk.gov.hmrc.api.service.AuthService
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-trait AuthHelper {
+trait TokenReplacement {
+  implicit class TokenReplacer(value: String) {
 
-  val authService: AuthService = new AuthService
-
-  def getAuthBearerToken: String = {
-    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authService.postLogin
-    authServiceRequestResponse
-      .header("Authorization")
-      .getOrElse(fail(s"Could not obtain auth bearer token. Auth Service Response: $authServiceRequestResponse"))
+    def replaceFormattedDate(date: LocalDate): String =
+      value.replace("{{date}}", date.format(DateTimeFormatter.ISO_LOCAL_DATE))
   }
-
 }
