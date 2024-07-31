@@ -1,1 +1,1 @@
-{"date":"{{date}}","eoris":[{"eori":"GB000000000200","authorised":true},{"eori":"XI000000000200","authorised":true}]}
+{"date":"{{dateTime}}","eoris":[{"eori":"GB000000000200","authorised":true},{"eori":"XI000000000200","authorised":true}]}

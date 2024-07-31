@@ -23,7 +23,7 @@ import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 import uk.gov.hmrc.api.specs.payloads.{RequestPayloads, ResponsePayloads}
 import uk.gov.hmrc.api.utils.{JsonReader, TokenReplacement}
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 trait BaseSpec
     extends AnyFeatureSpec
@@ -34,6 +34,6 @@ trait BaseSpec
     with JsonReader
     with TokenReplacement {
 
-  protected val checkerApiService = new UknwAuthCheckerApiService
-  protected val now: LocalDate    = LocalDate.now
+  protected val checkerApiService  = new UknwAuthCheckerApiService
+  protected val now: LocalDateTime = LocalDate.now.atTime(LocalTime.MIDNIGHT)
 }
