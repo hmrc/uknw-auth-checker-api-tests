@@ -26,27 +26,21 @@ import scala.concurrent.duration.DurationInt
 
 class UknwAuthCheckerApiService extends HttpClient {
 
-  val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
+  private val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
 
-  def authorisations200(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+  def authorisations(
+    individualPayload: JsValue,
+    authToken: String = "",
+    contentType: String = "application/json",
+    acceptInput: String = "application/vnd.hmrc.1.0+json"
+  ): StandaloneWSRequest#Self#Response =
     Await.result(
       post(
         authorisationsUrl,
         Json.stringify(individualPayload),
-        ("Content-Type", "application/json"),
+        ("Content-Type", contentType),
         ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
-  def authorisations401(individualPayload: JsValue): StandaloneWSRequest#Self#Response =
-    Await.result(
-      post(
-        authorisationsUrl,
-        Json.stringify(individualPayload),
-        ("Content-Type", "application/json"),
-        ("Accept", "application/vnd.hmrc.1.0+json")
+        ("Accept", acceptInput)
       ),
       10.seconds
     )
@@ -116,32 +110,4 @@ class UknwAuthCheckerApiService extends HttpClient {
       ),
       10.seconds
     )
-
-  def authorisations406_invalidAccept(
-    authToken: String,
-    individualPayload: JsValue
-  ): StandaloneWSRequest#Self#Response =
-    Await.result(
-      post(
-        authorisationsUrl,
-        Json.stringify(individualPayload),
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "invalid")
-      ),
-      10.seconds
-    )
-
-  def authorisations500(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
-    Await.result(
-      post(
-        authorisationsUrl,
-        Json.stringify(individualPayload),
-        ("Content-Type", "invalid"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
 }
