@@ -132,12 +132,27 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations500(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+  def authorisations406_invalidContentType(
+    authToken: String,
+    individualPayload: JsValue
+  ): StandaloneWSRequest#Self#Response =
     Await.result(
       post(
         authorisationsUrl,
         Json.stringify(individualPayload),
         ("Content-Type", "invalid"),
+        ("Authorization", authToken),
+        ("Accept", "application/vnd.hmrc.1.0+json")
+      ),
+      10.seconds
+    )
+
+  def authorisations500(authToken: String, individualPayload: JsValue): StandaloneWSRequest#Self#Response =
+    Await.result(
+      post(
+        authorisationsUrl,
+        Json.stringify(individualPayload),
+        ("Content-Type", "application/json"),
         ("Authorization", authToken),
         ("Accept", "application/vnd.hmrc.1.0+json")
       ),

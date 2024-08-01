@@ -29,4 +29,5 @@ trait RequestPayloads extends JsonReader {
   val req400_singleEori: JsValue       = getJsonFile("/requests/authRequest400_singleEori.json")
   val req403_single: JsValue           = getJsonFile("/requests/authRequest403_single.json")
   val req400_tooManyEoris: JsValue     = getJsonFile("/requests/authRequest400_tooManyEoris.json")
+  val req500: JsValue                  = getJsonFile("/requests/authRequest500.json")
 }

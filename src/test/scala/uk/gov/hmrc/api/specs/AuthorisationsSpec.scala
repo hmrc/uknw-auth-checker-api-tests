@@ -253,14 +253,14 @@ class AuthorisationsSpec extends BaseSpec with AuthHelper {
   }
 
   Feature("500, INTERNAL_SERVER_ERROR case Scenarios") {
-    Scenario("500, wrong content type") {
+    Scenario("500, internal server error") {
       Given("Valid bearer token")
       val authBearerToken: String = getAuthBearerToken
 
       When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations500(authBearerToken, req200_single)
+      val response = checkerApiService.authorisations500(authBearerToken, req500)
 
-      Then("I am returned a status code 405")
+      Then("I am returned a status code 500")
       response.status shouldBe 500
       response.body   shouldBe expectedRes500
     }
