@@ -22,7 +22,7 @@ import java.time.{LocalDateTime, ZoneId}
 trait TokenReplacement {
   implicit class TokenReplacer(value: String) {
 
-    private val dateTimeFormat: String       = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val dateTimeFormat: String       = "yyyy-MM-dd'T'HH:mm:ss.SS'Z'"
     private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
     private val utcZone: String              = "UTC"
     private val utcZoneId                    = ZoneId.of(utcZone)
