@@ -19,21 +19,33 @@ package uk.gov.hmrc.api.specs
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import play.api.libs.json.JsValue
+import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
-import uk.gov.hmrc.api.specs.payloads.{RequestPayloads, ResponsePayloads}
-import uk.gov.hmrc.api.utils.{JsonReader, TokenReplacement}
+import uk.gov.hmrc.api.utils.TokenReplacement
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, LocalTime, OffsetDateTime}
 
-trait BaseSpec
-    extends AnyFeatureSpec
-    with GivenWhenThen
-    with Matchers
-    with RequestPayloads
-    with ResponsePayloads
-    with JsonReader
-    with TokenReplacement {
+trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with TokenReplacement {
 
-  protected val checkerApiService = new UknwAuthCheckerApiService
-  protected val now: LocalDate    = LocalDate.now
+  protected val checkerApiService  = new UknwAuthCheckerApiService
+  protected val now: LocalDateTime = LocalDate.now.atTime(LocalTime.MIDNIGHT)
+
+  def comprehensivelyAssert(
+    response: StandaloneWSRequest#Self#Response,
+    expectedCode: Int,
+    expectedRes: JsValue
+  ): Unit = {
+    response.status shouldBe expectedCode
+    response.body   shouldBe expectedRes.toString.replaceFormattedDate(now)
+  }
+
+  def comprehensivelyAssert(
+    response: StandaloneWSRequest#Self#Response,
+    expectedCode: Int,
+    expectedRes: String
+  ): Unit = {
+    response.status shouldBe expectedCode
+    response.body   shouldBe expectedRes.replaceFormattedDate(now)
+  }
 }

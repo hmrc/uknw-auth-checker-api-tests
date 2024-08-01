@@ -16,13 +16,19 @@
 
 package uk.gov.hmrc.api.utils
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
 
 trait TokenReplacement {
   implicit class TokenReplacer(value: String) {
 
-    def replaceFormattedDate(date: LocalDate): String =
-      value.replace("{{date}}", date.format(DateTimeFormatter.ISO_LOCAL_DATE))
+    private val dateTimeFormat: String       = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
+    private val utcZone: String              = "UTC"
+    private val utcZoneId                    = ZoneId.of(utcZone)
+
+    def replaceFormattedDate(dateTime: LocalDateTime): String =
+      value.replace("{{dateTime}}", formatter.format(dateTime.atZone(utcZoneId)))
+
   }
 }

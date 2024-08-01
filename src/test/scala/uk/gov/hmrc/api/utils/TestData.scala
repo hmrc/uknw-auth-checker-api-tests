@@ -16,17 +16,11 @@
 
 package uk.gov.hmrc.api.utils
 
-import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.api.utils.resources.requests._
+import uk.gov.hmrc.api.utils.resources.responses._
 
-import scala.io.Source
+trait TestData extends Responses200 with Requests200 with Request400 with ErrorResponses {
 
-trait JsonReader {
-
-  def getJsonFile(filePath: String): JsValue = {
-    val source = Source.fromURL(getClass.getResource(filePath))
-    val lines  =
-      try Json.parse(source.mkString)
-      finally source.close()
-    lines
-  }
+  def createRequest(eoris: Seq[String]): EisAuthorisationRequest =
+    EisAuthorisationRequest(Some("ARandomInput"), "UKNW", eoris)
 }

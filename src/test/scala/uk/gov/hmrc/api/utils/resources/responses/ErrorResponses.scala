@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.specs.payloads
+package uk.gov.hmrc.api.utils.resources.responses
 
-import uk.gov.hmrc.api.utils.JsonReader
-
-trait ResponsePayloads extends JsonReader {
-
-  val expectedRes200_single: String   = getJsonFile("/responses/authResponse200_single.json").toString
-  val expectedRes200_multiple: String = getJsonFile("/responses/authResponse200_multiple.json").toString
-
+trait ErrorResponses {
   val expectedRes400_singleEori: String         =
     """{"code":"BAD_REQUEST","message":"Bad request","errors":[{"code":"INVALID_FORMAT","message":"ABCD000000000200 is not a supported EORI number","path":"eoris"}]}"""
   val expectedRes400_multipleEori: String       =
@@ -43,4 +37,5 @@ trait ResponsePayloads extends JsonReader {
   val expectedRes406: String              =
     """{"code":"NOT_ACCEPTABLE","message":"Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"}"""
   val expectedRes500: String              = """{"code":"INTERNAL_SERVER_ERROR","message":"Unexpected internal server error"}"""
+
 }

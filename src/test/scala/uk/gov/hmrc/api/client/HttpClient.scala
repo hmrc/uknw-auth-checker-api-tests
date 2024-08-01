@@ -31,8 +31,8 @@ trait HttpClient {
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val ec: ExecutionContext     = ExecutionContext.global
 
-  val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
-  val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")
+  private val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
+  private val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")
 
   private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest#Self = {
     val request = wsClient

@@ -20,10 +20,10 @@ import com.typesafe.config.{Config, ConfigFactory}
 
 object TestConfiguration {
 
-  val config: Config        = ConfigFactory.load()
-  val env: String           = config.getString("environment")
-  val defaultConfig: Config = config.getConfig("local")
-  val envConfig: Config     = config.getConfig(env).withFallback(defaultConfig)
+  private val config: Config        = ConfigFactory.load()
+  private val env: String           = config.getString("environment")
+  private val defaultConfig: Config = config.getConfig("local")
+  private val envConfig: Config     = config.getConfig(env).withFallback(defaultConfig)
 
   def url(service: String): String = {
     val host = env match {
@@ -33,10 +33,10 @@ object TestConfiguration {
     s"$host${serviceRoute(service)}"
   }
 
-  def environmentHost: String = envConfig.getString("services.host")
+  private def environmentHost: String = envConfig.getString("services.host")
 
-  def servicePort(serviceName: String): String = envConfig.getString(s"services.$serviceName.port")
+  private def servicePort(serviceName: String): String = envConfig.getString(s"services.$serviceName.port")
 
-  def serviceRoute(serviceName: String): String = envConfig.getString(s"services.$serviceName.productionRoute")
+  private def serviceRoute(serviceName: String): String = envConfig.getString(s"services.$serviceName.productionRoute")
 
 }
