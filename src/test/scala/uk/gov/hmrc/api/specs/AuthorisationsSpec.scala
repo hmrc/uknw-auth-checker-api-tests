@@ -38,25 +38,27 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("Happy path with single EORI - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
-      val request = createRequest(req200_single)
+      val request = createRequest(localNow, req200_single)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val response         = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_single))
 
       Then("I am returned a status code 200")
-      comprehensivelyAssert(response, 200, expetedRes200_single)
+      comprehensivelyAssert(response, 200, expectedResponse)
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
-      val request = createRequest(req200_multiple)
+      val request = createRequest(localNow, req200_multiple)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val response         = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_multiple))
 
       Then("I am returned a status code 200")
-      comprehensivelyAssert(response, 200, expectedRes200_multiple)
+      comprehensivelyAssert(response, 200, expectedResponse)
     }
   }
 
@@ -66,7 +68,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       Given("a bearer token")
 
       And("an invalid payload")
-      val request  = createRequest(req400_singleEori)
+      val request  = createRequest(localNow, req400_singleEori)
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
@@ -77,7 +79,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("400 Bad Eoris") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(req400_multipleEori)
+      val request = createRequest(localNow, req400_multipleEori)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
@@ -89,7 +91,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("400 Not enough EORIS (0)") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(req400_noEoris)
+      val request = createRequest(localNow, req400_noEoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
@@ -101,7 +103,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("400 Too many EORIS (3001)") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(req400_tooManyEoris)
+      val request = createRequest(localNow, req400_tooManyEoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
@@ -118,7 +120,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       Given("an invalid bearer token")
       val anInvalidToken: String = "Invalid Token"
       And("a valid payload")
-      val request                = createRequest(req200_multiple)
+      val request                = createRequest(localNow, req200_multiple)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), anInvalidToken)
@@ -131,7 +133,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("Missing Bearer Token") {
       Given("There's no bearer token")
       And("a valid payload")
-      val request = createRequest(req200_multiple)
+      val request = createRequest(localNow, req200_multiple)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request))
@@ -148,7 +150,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("Forcing a 403 response") {
       Given("Valid bearer token")
       And("a forbidden payload")
-      val request = createRequest(req403_single)
+      val request = createRequest(localNow, req403_single)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
@@ -232,7 +234,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("406 Accept") {
       Given("Valid bearer token")
       And("a valid payload")
-      val request = createRequest(req200_single)
+      val request = createRequest(localNow, req200_single)
 
       When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, acceptInput = "invalid")
@@ -247,7 +249,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("500, wrong content type") {
       Given("Valid bearer token")
       And("a valid payload")
-      val request = createRequest(req200_single)
+      val request = createRequest(localNow, req200_single)
 
       When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, "invalid")

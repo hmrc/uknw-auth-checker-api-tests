@@ -16,14 +16,9 @@
 
 package uk.gov.hmrc.api.utils.resources.responses
 
-import play.api.libs.json.{JsValue, Json}
-
 trait Responses200 {
-  val expetedRes200_single: JsValue =
-    Json.parse("""{"date":"{{dateTime}}","eoris":[{"eori":"GB000000000200","authorised":true}]}""".mkString)
+  val expectedRes200_single: Seq[String] = Seq("GB000000000200")
 
-  val expectedRes200_multiple: JsValue = Json.parse(
-    """{"date":"{{dateTime}}","eoris":[{"eori":"GB000000000200","authorised":true},{"eori":"XI000000000200","authorised":true}]}""".mkString
-  )
+  val expectedRes200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
 
 }

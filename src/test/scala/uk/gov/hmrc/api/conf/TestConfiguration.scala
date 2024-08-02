@@ -20,20 +20,23 @@ import com.typesafe.config.{Config, ConfigFactory}
 
 object TestConfiguration {
 
-  private val config: Config        = ConfigFactory.load()
-  private val env: String           = config.getString("environment")
-  private val defaultConfig: Config = config.getConfig("local")
-  private val envConfig: Config     = config.getConfig(env).withFallback(defaultConfig)
+  private val servicesHost: String = "services.host"
+  private val environment: String  = "environment"
+  private val local: String        = "local"
+
+  private val config: Config          = ConfigFactory.load()
+  private val env: String             = config.getString(environment)
+  private val defaultConfig: Config   = config.getConfig(local)
+  private val envConfig: Config       = config.getConfig(env).withFallback(defaultConfig)
+  private val environmentHost: String = envConfig.getString(servicesHost)
 
   def url(service: String): String = {
     val host = env match {
       case "local" => s"$environmentHost:${servicePort(service)}"
-      case _       => s"${envConfig.getString(s"services.host")}"
+      case _       => s"${envConfig.getString(servicesHost)}"
     }
     s"$host${serviceRoute(service)}"
   }
-
-  private def environmentHost: String = envConfig.getString("services.host")
 
   private def servicePort(serviceName: String): String = envConfig.getString(s"services.$serviceName.port")
 

@@ -19,8 +19,18 @@ package uk.gov.hmrc.api.utils
 import uk.gov.hmrc.api.utils.resources.requests._
 import uk.gov.hmrc.api.utils.resources.responses._
 
-trait TestData extends Responses200 with Requests200 with Request400 with ErrorResponses {
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
-  def createRequest(eoris: Seq[String]): EisAuthorisationRequest =
-    EisAuthorisationRequest(Some("ARandomInput"), "UKNW", eoris)
+trait TestData extends Requests200 with Request400 with Responses200 with ErrorResponses {
+
+  def createRequest(localDateTime: LocalDate, eoris: Seq[String]): EisAuthorisationRequest =
+    EisAuthorisationRequest(Some(localDateTime), "UKNW", eoris)
+
+  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String]): EisAuthorisationsResponse =
+    EisAuthorisationsResponse(
+      zonedDate,
+      eoris.map { anEori =>
+        EisAuthorisationResponse(anEori, true)
+      }
+    )
 }

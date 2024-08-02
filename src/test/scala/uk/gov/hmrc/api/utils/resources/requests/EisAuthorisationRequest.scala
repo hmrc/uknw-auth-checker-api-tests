@@ -18,7 +18,9 @@ package uk.gov.hmrc.api.utils.resources.requests
 
 import play.api.libs.json.{Json, OFormat}
 
-case class EisAuthorisationRequest(validityDate: Option[String], authType: String, eoris: Seq[String]) {}
+import java.time.LocalDate
+
+case class EisAuthorisationRequest(validityDate: Option[LocalDate], authorised: String, eoris: Seq[String]) {}
 
 object EisAuthorisationRequest {
   implicit val format: OFormat[EisAuthorisationRequest] = Json.format[EisAuthorisationRequest]

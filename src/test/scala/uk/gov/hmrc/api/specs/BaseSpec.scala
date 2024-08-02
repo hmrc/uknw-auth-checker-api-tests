@@ -22,14 +22,14 @@ import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
-import uk.gov.hmrc.api.utils.TokenReplacement
 
-import java.time.{LocalDate, LocalDateTime, LocalTime, OffsetDateTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId, ZonedDateTime}
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with TokenReplacement {
+trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
-  protected val checkerApiService  = new UknwAuthCheckerApiService
-  protected val now: LocalDateTime = LocalDate.now.atTime(LocalTime.MIDNIGHT)
+  protected val checkerApiService       = new UknwAuthCheckerApiService
+  protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
+  protected val localNow: LocalDate     = LocalDate.now
 
   def comprehensivelyAssert(
     response: StandaloneWSRequest#Self#Response,
@@ -37,7 +37,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Toke
     expectedRes: JsValue
   ): Unit = {
     response.status shouldBe expectedCode
-    response.body   shouldBe expectedRes.toString.replaceFormattedDate(now)
+    println(expectedRes.toString)
+    println(response.body)
+    response.body   shouldBe expectedRes.toString
   }
 
   def comprehensivelyAssert(
@@ -46,6 +48,6 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Toke
     expectedRes: String
   ): Unit = {
     response.status shouldBe expectedCode
-    response.body   shouldBe expectedRes.replaceFormattedDate(now)
+    response.body   shouldBe expectedRes
   }
 }
