@@ -19,9 +19,11 @@ package uk.gov.hmrc.api.conf
 import play.api.libs.ws.DefaultWSProxyServer
 
 object ZapConfiguration {
+  private val host: String = "localhost"
+
   var isEnabled: Boolean                = System.getProperty("zap.proxy", "false").toBoolean
   var proxyPort: Int                    = System.getProperty("zap.proxyPort", "11000").toInt
-  var proxyHost: String                 = "localhost"
+  var proxyHost: String                 = host
   val proxyServer: DefaultWSProxyServer = DefaultWSProxyServer(
     host = proxyHost,
     port = proxyPort

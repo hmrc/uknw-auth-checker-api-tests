@@ -26,11 +26,13 @@ trait TestData extends Requests200 with ErrorRequests with Responses200 with Err
   def createRequest(localDateTime: LocalDate, eoris: Seq[String]): EisAuthorisationRequest =
     EisAuthorisationRequest(Some(localDateTime), "UKNW", eoris)
 
-  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String]): EisAuthorisationsResponse =
+  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String]): EisAuthorisationsResponse = {
+    val defaultAuthorisation: Boolean = true
     EisAuthorisationsResponse(
       zonedDate,
       eoris.map { anEori =>
-        EisAuthorisationResponse(anEori, true)
+        EisAuthorisationResponse(anEori, defaultAuthorisation)
       }
     )
+  }
 }

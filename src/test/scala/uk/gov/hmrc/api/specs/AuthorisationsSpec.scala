@@ -150,7 +150,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("Forcing a 403 response") {
       Given("Valid bearer token")
       And("a forbidden payload")
-      val request = createRequest(localNow, req403_single)
+      val request = createRequest(localNow, req403_forbidden)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
@@ -249,7 +249,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("500, wrong content type") {
       Given("Valid bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req500_single)
+      val request = createRequest(localNow, req500_internalError)
 
       When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)

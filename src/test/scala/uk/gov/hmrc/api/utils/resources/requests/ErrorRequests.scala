@@ -23,8 +23,8 @@ trait ErrorRequests {
   val req400_multipleEori: Seq[String] = Seq("ABCD000000000200", "EFGH000000000200")
   val req400_noEoris: Seq[String]      = Seq.empty
 
-  val req403_single: Seq[String]       = Seq("GB999999999403")
-  val req500_single: Seq[String]       = Seq("GB000000000500")
+  val req403_forbidden: Seq[String]       = Seq("GB999999999403")
+  val req500_internalError: Seq[String]       = Seq("GB000000000500")
   val req400_tooManyEoris: Seq[String] = Seq(
     "GB837826880909874",
     "XI968840631629",
