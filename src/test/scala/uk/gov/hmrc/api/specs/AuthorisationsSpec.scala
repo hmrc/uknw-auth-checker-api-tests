@@ -41,7 +41,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val request = createRequest(localNow, req200_single)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response         = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
       val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_single))
 
       Then("I am returned a status code 200")
