@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.utils.resources.responses
 
-import org.slf4j.{Logger, LoggerFactory}
+trait Responses200 {
+  val expectedRes200_single: Seq[String] = Seq("GB000000000200")
 
-object ApiLogger {
-
-  val log: Logger = LoggerFactory.getLogger("[API Logger]")
+  val expectedRes200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
 
 }

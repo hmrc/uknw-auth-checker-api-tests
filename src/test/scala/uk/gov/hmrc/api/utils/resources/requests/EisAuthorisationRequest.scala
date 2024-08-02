@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.utils.resources.requests
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Json, OFormat}
 
-import scala.io.Source
+import java.time.LocalDate
 
-trait JsonReader {
+case class EisAuthorisationRequest(validityDate: Option[LocalDate], authorised: String, eoris: Seq[String]) {}
 
-  def getJsonFile(filePath: String): JsValue = {
-    val source = Source.fromURL(getClass.getResource(filePath))
-    val lines  =
-      try Json.parse(source.mkString)
-      finally source.close()
-    lines
-  }
+object EisAuthorisationRequest {
+  implicit val format: OFormat[EisAuthorisationRequest] = Json.format[EisAuthorisationRequest]
 }
