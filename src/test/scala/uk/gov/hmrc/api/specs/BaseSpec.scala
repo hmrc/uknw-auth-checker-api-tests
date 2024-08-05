@@ -46,7 +46,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       wsResponse.body   shouldBe response
     }
 
-    //This is for the HEAD request which doesn't receive a body
+    // This is for the HEAD request which doesn't receive a body
     def isMethodNotAllowed: Assertion =
       wsResponse.status shouldBe 405
   }
