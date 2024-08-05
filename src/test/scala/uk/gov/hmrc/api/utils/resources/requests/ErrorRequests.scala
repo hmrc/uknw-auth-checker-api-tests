@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.api.utils.resources.requests
 
-import play.api.libs.json.{JsValue, Json}
-
 trait ErrorRequests {
   val req400_singleEori: Seq[String]   = Seq("ABCD000000000200")
   val req400_multipleEori: Seq[String] = Seq("ABCD000000000200", "EFGH000000000200")

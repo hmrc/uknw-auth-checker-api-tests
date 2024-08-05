@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.api.utils.resources.requests
 
-import play.api.libs.json.{JsValue, Json}
-
 trait Requests200 {
   val req200_single: Seq[String] = Seq("GB000000000200")
 

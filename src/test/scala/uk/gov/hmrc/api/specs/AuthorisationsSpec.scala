@@ -45,7 +45,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_single))
 
       Then("I am returned a status code 200")
-      comprehensivelyAssert(response, 200, expectedResponse)
+      response hasStatusAndBody (200, expectedResponse.toString())
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
@@ -58,7 +58,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_multiple))
 
       Then("I am returned a status code 200")
-      comprehensivelyAssert(response, 200, expectedResponse)
+      response hasStatusAndBody (200, expectedResponse.toString())
     }
   }
 
@@ -73,7 +73,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 400")
-      comprehensivelyAssert(response, 400, expectedRes400_singleEori)
+      response isBadRequest expectedRes400_singleEori
     }
 
     Scenario("400 Bad Eoris") {
@@ -85,7 +85,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 400")
-      comprehensivelyAssert(response, 400, expectedRes400_multipleEori)
+      response isBadRequest expectedRes400_multipleEori
     }
 
     Scenario("400 Not enough EORIS (0)") {
@@ -97,7 +97,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 400")
-      comprehensivelyAssert(response, 400, expectedRes400_wrongNumberOfEoris)
+      response isBadRequest expectedRes400_wrongNumberOfEoris
     }
 
     Scenario("400 Too many EORIS (3001)") {
@@ -109,8 +109,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 400")
-      response.status shouldBe 400
-      response.body   shouldBe expectedRes400_wrongNumberOfEoris
+      response isBadRequest expectedRes400_wrongNumberOfEoris
     }
   }
 
@@ -126,8 +125,8 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), anInvalidToken)
 
       Then("I am returned a status code 401")
-      response.status shouldBe 401
-      response.body   shouldBe expectedRes401_unauthorized
+      response hasStatusAndBody (401, expectedRes401_unauthorized)
+
     }
 
     Scenario("Missing Bearer Token") {
@@ -139,8 +138,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request))
 
       Then("I am returned a status code 401")
-      response.status shouldBe 401
-      response.body   shouldBe expectedRes401_unauthorized
+      response hasStatusAndBody (401, expectedRes401_unauthorized)
     }
 
   }
@@ -156,7 +154,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 403")
-      comprehensivelyAssert(response, 403, expectedRes403_forbidden)
+      response hasStatusAndBody (403, expectedRes403_forbidden)
     }
 
   }
@@ -170,8 +168,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_get(authBearerToken)
 
       Then("I am returned a status code 403")
-      response.status shouldBe 405
-      response.body   shouldBe expectedRes405_notAllowed
+      response isMethodNotAllowed expectedRes405_notAllowed
     }
 
     Scenario("405, DELETE") {
@@ -181,8 +178,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_delete(authBearerToken)
 
       Then("I am returned a status code 405")
-      response.status shouldBe 405
-      response.body   shouldBe expectedRes405_notAllowed
+      response isMethodNotAllowed expectedRes405_notAllowed
     }
 
     Scenario("405, HEAD") {
@@ -192,7 +188,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_head(authBearerToken)
 
       Then("I am returned a status code 405")
-      response.status shouldBe 405
+      response.isMethodNotAllowed
     }
 
     Scenario("405, OPTION") {
@@ -202,8 +198,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_option(authBearerToken)
 
       Then("I am returned a status code 405")
-      response.status shouldBe 405
-      response.body   shouldBe expectedRes405_notAllowed
+      response isMethodNotAllowed expectedRes405_notAllowed
     }
 
     Scenario("405, PATCH") {
@@ -213,8 +208,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_patch(authBearerToken)
 
       Then("I am returned a status code 405")
-      response.status shouldBe 405
-      response.body   shouldBe expectedRes405_notAllowed
+      response isMethodNotAllowed expectedRes405_notAllowed
     }
 
     Scenario("405, PUT") {
@@ -223,30 +217,40 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations405_put(authBearerToken)
 
       Then("I am returned a status code 405")
-      response.status shouldBe 405
-      response.body   shouldBe expectedRes405_notAllowed
+      response isMethodNotAllowed expectedRes405_notAllowed
     }
 
   }
 
   Feature("406, NOT_ACCEPTABLE case scenarios") {
 
-    Scenario("406 Accept") {
+    Scenario("406 invalid Accept") {
       Given("Valid bearer token")
       And("a valid payload")
       val request = createRequest(localNow, req200_single)
 
-      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
+      When("a POST authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, acceptInput = "invalid")
 
-      Then("I am returned a status code 405")
-      response.status shouldBe 406
-      response.body   shouldBe expectedRes406
+      Then("I am returned a status code 406")
+      response hasStatusAndBody (406, expectedRes406)
+    }
+
+    Scenario("406 invalid Content-Type") {
+      Given("Valid bearer token")
+      And("a valid payload")
+      val request = createRequest(localNow, req200_single)
+
+      When("a POST authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, contentType = "invalid")
+
+      Then("I am returned a status code 406")
+      response hasStatusAndBody (406, expectedRes406)
     }
   }
 
   Feature("500, INTERNAL_SERVER_ERROR case Scenarios") {
-    Scenario("500, wrong content type") {
+    Scenario("500, internal server error") {
       Given("Valid bearer token")
       And("a valid payload")
       val request = createRequest(localNow, req500_internalError)
@@ -255,9 +259,7 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       Then("I am returned a status code 500")
-      response.status shouldBe 500
-      response.body   shouldBe expectedRes500
+      response hasStatusAndBody (500, expectedRes500)
     }
   }
-
 }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.utils
 import uk.gov.hmrc.api.utils.resources.requests._
 import uk.gov.hmrc.api.utils.resources.responses._
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{LocalDate, ZonedDateTime}
 
 trait TestData extends Requests200 with ErrorRequests with Responses200 with ErrorResponses {
 
