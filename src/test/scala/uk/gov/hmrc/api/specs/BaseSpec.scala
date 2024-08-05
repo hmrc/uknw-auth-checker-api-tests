@@ -16,24 +16,38 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.GivenWhenThen
+import org.scalatest.{Assertion, GivenWhenThen}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
-import uk.gov.hmrc.api.specs.payloads.{RequestPayloads, ResponsePayloads}
-import uk.gov.hmrc.api.utils.{JsonReader, TokenReplacement}
 
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 
-trait BaseSpec
-    extends AnyFeatureSpec
-    with GivenWhenThen
-    with Matchers
-    with RequestPayloads
-    with ResponsePayloads
-    with JsonReader
-    with TokenReplacement {
+trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
-  protected val checkerApiService  = new UknwAuthCheckerApiService
-  protected val now: LocalDateTime = LocalDate.now.atTime(LocalTime.MIDNIGHT)
+  protected val checkerApiService       = new UknwAuthCheckerApiService
+  protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
+  protected val localNow: LocalDate     = LocalDate.now
+
+  implicit class ResponseExtensions(wsResponse: StandaloneWSRequest#Self#Response) {
+    def hasStatusAndBody(response: (Int, String)): Assertion = {
+      wsResponse.status shouldBe response._1
+      wsResponse.body   shouldBe response._2
+    }
+
+    def isBadRequest(response: String): Assertion = {
+      wsResponse.status shouldBe 400
+      wsResponse.body   shouldBe response
+    }
+
+    def isMethodNotAllowed(response: String): Assertion = {
+      wsResponse.status shouldBe 405
+      wsResponse.body   shouldBe response
+    }
+
+    // This is for the HEAD request which doesn't receive a body
+    def isMethodNotAllowed: Assertion =
+      wsResponse.status shouldBe 405
+  }
 }

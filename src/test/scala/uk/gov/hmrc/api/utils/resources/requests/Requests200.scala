@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.conf
+package uk.gov.hmrc.api.utils.resources.requests
 
-import play.api.libs.ws.DefaultWSProxyServer
+trait Requests200 {
+  val req200_single: Seq[String] = Seq("GB000000000200")
 
-object ZapConfiguration {
-  private val host: String = "localhost"
+  val req200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
 
-  var isEnabled: Boolean                = System.getProperty("zap.proxy", "false").toBoolean
-  var proxyPort: Int                    = System.getProperty("zap.proxyPort", "11000").toInt
-  var proxyHost: String                 = host
-  val proxyServer: DefaultWSProxyServer = DefaultWSProxyServer(
-    host = proxyHost,
-    port = proxyPort
-  )
 }
