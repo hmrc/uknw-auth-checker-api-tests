@@ -17,7 +17,7 @@
 package uk.gov.hmrc.api.service
 
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.client.HttpClient
 import uk.gov.hmrc.api.conf.TestConfiguration
 
@@ -33,7 +33,7 @@ class UknwAuthCheckerApiService extends HttpClient {
     authToken: String = "",
     contentType: String = "application/json",
     acceptInput: String = "application/vnd.hmrc.1.0+json"
-  ): StandaloneWSRequest#Self#Response =
+  ): StandaloneWSResponse =
     Await.result(
       post(
         authorisationsUrl,
@@ -45,7 +45,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_get(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_get(authToken: String): StandaloneWSResponse =
     Await.result(
       get(
         authorisationsUrl,
@@ -56,7 +56,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_delete(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_delete(authToken: String): StandaloneWSResponse =
     Await.result(
       delete(
         authorisationsUrl,
@@ -67,7 +67,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_head(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_head(authToken: String): StandaloneWSResponse =
     Await.result(
       head(
         authorisationsUrl,
@@ -78,7 +78,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_option(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_option(authToken: String): StandaloneWSResponse =
     Await.result(
       option(
         authorisationsUrl,
@@ -89,7 +89,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_patch(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_patch(authToken: String): StandaloneWSResponse =
     Await.result(
       patch(
         authorisationsUrl,
@@ -100,7 +100,7 @@ class UknwAuthCheckerApiService extends HttpClient {
       10.seconds
     )
 
-  def authorisations405_put(authToken: String): StandaloneWSRequest#Self#Response =
+  def authorisations405_put(authToken: String): StandaloneWSResponse =
     Await.result(
       put(
         authorisationsUrl,
