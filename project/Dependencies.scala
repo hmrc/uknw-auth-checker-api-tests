@@ -4,9 +4,10 @@ object Dependencies {
   val PekkoVersion        = "1.1.0-M1"
   val test: Seq[ModuleID] = Seq(
     "org.apache.pekko"    %% "pekko-actor-typed"         % PekkoVersion,
-    "org.apache.pekko"    %% "pekko-actor-testkit-typed" % PekkoVersion  % Test,
     "org.apache.pekko"    %% "pekko-stream"              % PekkoVersion,
     "org.apache.pekko"    %% "pekko-slf4j"               % PekkoVersion,
+    "org.apache.pekko"    %% "pekko-actor-testkit-typed" % PekkoVersion  % Test,
+    "org.commonmark"       % "commonmark"                % "0.22.0"      % Test,
     "com.typesafe"         % "config"                    % "1.4.3"       % Test,
     "org.playframework"   %% "play-ahc-ws-standalone"    % "3.1.0-M2"    % Test,
     "org.playframework"   %% "play-ws-standalone-json"   % "3.1.0-M2"    % Test,
