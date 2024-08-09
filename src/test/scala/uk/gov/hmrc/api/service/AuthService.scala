@@ -17,7 +17,7 @@
 package uk.gov.hmrc.api.service
 
 import org.scalatest.Assertions.fail
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.client.HttpClient
 import uk.gov.hmrc.api.conf.TestConfiguration
 
@@ -39,7 +39,7 @@ class AuthService extends HttpClient {
        |}
      """.stripMargin
 
-  def postLogin: StandaloneWSRequest#Self#Response = {
+  def postLogin: StandaloneWSResponse = {
     val url = s"$host/application/session/login"
     Await.result(
       post(url, authPayload, ("Content-Type", "application/json")),
@@ -48,7 +48,7 @@ class AuthService extends HttpClient {
   }
 
   def getAuthBearerToken: String = {
-    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = postLogin
+    val authServiceRequestResponse: StandaloneWSResponse = postLogin
     authServiceRequestResponse
       .header("Authorization")
       .getOrElse(fail(s"Could not obtain auth bearer token. Auth Service Response: $authServiceRequestResponse"))

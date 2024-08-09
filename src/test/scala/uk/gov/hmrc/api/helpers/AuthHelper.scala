@@ -17,7 +17,7 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.Assertions.fail
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.service.AuthService
 
 trait AuthHelper {
@@ -25,7 +25,7 @@ trait AuthHelper {
   val authService: AuthService = new AuthService
 
   def getAuthBearerToken: String = {
-    val authServiceRequestResponse: StandaloneWSRequest#Self#Response = authService.postLogin
+    val authServiceRequestResponse: StandaloneWSResponse = authService.postLogin
     authServiceRequestResponse
       .header("Authorization")
       .getOrElse(fail(s"Could not obtain auth bearer token. Auth Service Response: $authServiceRequestResponse"))

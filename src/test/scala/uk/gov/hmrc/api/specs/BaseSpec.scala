@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.specs
 import org.scalatest.{Assertion, GivenWhenThen}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
@@ -30,20 +30,20 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
   protected val localNow: LocalDate     = LocalDate.now
 
-  implicit class ResponseExtensions(wsResponse: StandaloneWSRequest#Self#Response) {
+  implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
     def hasStatusAndBody(response: (Int, String)): Assertion = {
-      wsResponse.status shouldBe response._1
-      wsResponse.body   shouldBe response._2
+      wsResponse.status        shouldBe response._1
+      wsResponse.body.toString shouldBe response._2
     }
 
     def isBadRequest(response: String): Assertion = {
-      wsResponse.status shouldBe 400
-      wsResponse.body   shouldBe response
+      wsResponse.status        shouldBe 400
+      wsResponse.body.toString shouldBe response
     }
 
     def isMethodNotAllowed(response: String): Assertion = {
-      wsResponse.status shouldBe 405
-      wsResponse.body   shouldBe response
+      wsResponse.status        shouldBe 405
+      wsResponse.body.toString shouldBe response
     }
 
     // This is for the HEAD request which doesn't receive a body

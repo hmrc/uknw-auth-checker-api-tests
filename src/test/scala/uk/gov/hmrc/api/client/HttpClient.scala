@@ -16,26 +16,34 @@
 
 package uk.gov.hmrc.api.client
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.typed.{ActorSystem, Behavior}
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.{StandaloneWSRequest, StandaloneWSResponse}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import uk.gov.hmrc.api.conf.ZapConfiguration._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+object MyActor {
+  def apply(): Behavior[String] = Behaviors.receive { (context, message) =>
+    context.log.info(s"Received message: $message")
+    Behaviors.same
+  }
+}
+
 trait HttpClient {
 
-  implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val ec: ExecutionContext     = ExecutionContext.global
+  implicit val actorSystem: ActorSystem[String] = ActorSystem(MyActor(), "myActorSystem")
+  implicit val ec: ExecutionContext             = ExecutionContext.global
 
   val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
   val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")
 
-  private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest#Self = {
-    val request = wsClient
+  private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest = {
+    val request: StandaloneWSRequest = wsClient
       .url(url)
       .withHttpHeaders(headers: _*)
     if (isEnabled) {
@@ -45,31 +53,31 @@ trait HttpClient {
     }
   }
 
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def get(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .get()
 
-  def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .post(bodyAsJson)
 
-  def delete(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def delete(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .delete()
 
-  def head(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def head(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .head()
 
-  def option(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def option(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .options()
 
-  def patch(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def patch(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .patch(dummyJson)
 
-  def put(url: String, headers: (String, String)*): Future[StandaloneWSRequest#Self#Response] =
+  def put(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .put(dummyJson)
 
