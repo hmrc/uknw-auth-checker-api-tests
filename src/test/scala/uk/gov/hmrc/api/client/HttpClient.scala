@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.api.client
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.typed.{ActorSystem, Behavior}
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
@@ -26,10 +27,17 @@ import uk.gov.hmrc.api.conf.ZapConfiguration._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+object MyActor {
+  def apply(): Behavior[String] = Behaviors.receive { (context, message) =>
+    context.log.info(s"Received message: $message")
+    Behaviors.same
+  }
+}
+
 trait HttpClient {
 
-  implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val ec: ExecutionContext     = ExecutionContext.global
+  implicit val actorSystem: ActorSystem[String] = ActorSystem(MyActor(), "myActorSystem")
+  implicit val ec: ExecutionContext             = ExecutionContext.global
 
   val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
   val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")
