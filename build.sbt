@@ -6,3 +6,6 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Dependencies.test,
     (Compile / compile) := ((Compile / compile) dependsOn (Compile / scalafmtSbtCheck, Compile / scalafmtCheckAll)).value
   )
+
+addCommandAlias("fmtAll", ";scalafmtSbt;scalafmtAll;")
+addCommandAlias("preCommit", ";clean;compile;fmtAll;")
