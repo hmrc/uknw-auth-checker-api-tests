@@ -80,7 +80,7 @@ code and build.sbt files.
 
 ### Format all
 
-This is a sbt command alias specific to this project. It will format of the code and build.sbt files.
+This is a sbt command alias specific to this project. It will format the code and build.sbt files.
 
 > `sbt fmtAll`
 
