@@ -3,9 +3,10 @@ lazy val root = (project in file("."))
     name := "uknw-auth-checker-api-tests",
     version := "0.1.0",
     scalaVersion := "3.3.3",
-    libraryDependencies ++= Dependencies.test,
-    (Compile / compile) := ((Compile / compile) dependsOn (Compile / scalafmtSbtCheck, Compile / scalafmtCheckAll)).value
+    libraryDependencies ++= Dependencies.test
   )
+
+Test / javaOptions += "-Dlogger.resource=logback-test.xml"
 
 addCommandAlias("fmtAll", ";scalafmtSbt;scalafmtAll;")
 addCommandAlias("preCommit", ";clean;compile;fmtAll;")
