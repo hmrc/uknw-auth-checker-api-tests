@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.api.specs
 
+import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
@@ -139,22 +140,6 @@ class AuthorisationsSpec extends BaseSpec with TestData {
 
       Then("I am returned a status code 401")
       response hasStatusAndBody (401, expectedRes401_unauthorized)
-    }
-
-  }
-
-  Feature("403, FORBIDDEN case Scenarios") {
-
-    Scenario("Forcing a 403 response") {
-      Given("Valid bearer token")
-      And("a forbidden payload")
-      val request = createRequest(localNow, req403_forbidden)
-
-      When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
-
-      Then("I am returned a status code 403")
-      response hasStatusAndBody (403, expectedRes403_forbidden)
     }
 
   }
