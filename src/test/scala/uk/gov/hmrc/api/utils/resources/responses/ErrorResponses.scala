@@ -31,8 +31,6 @@ trait ErrorResponses {
 
   val expectedRes401_unauthorized: String =
     """{"code":"UNAUTHORIZED","message":"The bearer token is invalid, missing, or expired"}"""
-  val expectedRes403_forbidden: String    =
-    """{"code":"FORBIDDEN","message":"You are not allowed to access this resource"}"""
   val expectedRes405_notAllowed: String   = """{"code":"METHOD_NOT_ALLOWED","message":"This method is not supported"}"""
   val expectedRes406: String              =
     """{"code":"NOT_ACCEPTABLE","message":"Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"}"""

@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait HttpClient {
   implicit lazy val actorSystem: ActorSystem = ActorSystem()
-  implicit val ec: ExecutionContext             = ExecutionContext.global
+  implicit val ec: ExecutionContext          = ExecutionContext.global
 
   val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
   val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")

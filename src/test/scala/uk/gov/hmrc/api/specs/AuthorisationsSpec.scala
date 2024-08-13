@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
