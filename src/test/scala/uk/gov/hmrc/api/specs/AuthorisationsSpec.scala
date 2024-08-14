@@ -18,9 +18,9 @@ package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.AuthService
-import uk.gov.hmrc.api.utils.TestData
+import uk.gov.hmrc.api.utils.{EoriGenerator, TestData}
 
-class AuthorisationsSpec extends BaseSpec with TestData {
+class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   private val myAuthService           = new AuthService
   private val authBearerToken: String = myAuthService.getAuthBearerToken
 
