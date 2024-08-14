@@ -39,11 +39,46 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
 
     }
 
+    Scenario("generate all unique authorised eoris") {
+      When("passed the max size of authorised eori test set")
+
+      val eoris = eoriGenerator(authorisedEoris.size).sample.get
+
+      Then("The list should contain the chosen number of eoris")
+
+      eoris.size shouldBe authorisedEoris.size
+
+      And("All eoris should be authorised")
+      eoris.forall(eori => authorisedEoris.contains(eori)) shouldBe true
+
+      And("All eoris should be unique")
+      eoris.distinct.size shouldBe authorisedEoris.size
+
+    }
+
+    Scenario("generate invalid eoris") {
+      When("0 passed as the numberOfAuthorisedEoris test set")
+
+      val numberOfEoris: Int = Gen.choose(1, authorisedEoris.size).sample.get
+      val eoris              = eoriGenerator(numberOfEoris, 0).sample.get
+
+      Then("The list should contain the chosen number of eoris")
+
+      eoris.size shouldBe numberOfEoris
+
+      And("All eoris should be authorised")
+      eoris.forall(eori => authorisedEoris.contains(eori)) shouldBe false
+
+      And("All eoris should be unique")
+      eoris.distinct.size shouldBe numberOfEoris
+
+    }
+
     Scenario("generate a chosen sized list of invalid eoris") {
       When("not passed a numberOfAuthorisedEoris value")
 
       val numberOfEoris: Int = Gen.choose(1, authorisedEoris.size).sample.get
-      val eoris = eoriGenerator(numberOfEoris, 0).sample.get
+      val eoris              = eoriGenerator(numberOfEoris, 0).sample.get
 
       Then("The list should contain the chosen number of eoris")
 
