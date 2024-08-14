@@ -20,6 +20,15 @@ Run tests as follows:
 ./run-tests.sh
 ```
 
+### Testing Approach
+
+This repository makes the use of a dynamic testing approach to follow that of the
+[Stub](https://github.com/hmrc/uknw-auth-checker-api-stub) and [performance tests](https://github.com/hmrc/uknw-auth-checker-api-performance-tests).
+This works through having a pre-determined set of authorised EORIs and a custom EORI generator.
+
+The EORI generator is located within the [EoriGenerator](src/test/scala/uk/gov/hmrc/test/api/utils/EoriGenerator.scala) trait.
+This works by allowing the input of the amount of EORIs and the amount of valid EORIs. The generator will then create a sequence with the correct combination based on the input.
+
 ## Running security tests with ZAP - on a local machine
 
 Clones dast-config-manager and runs its makefile, sets up proxy ports for ZAP, then runs the API tests and opens the
