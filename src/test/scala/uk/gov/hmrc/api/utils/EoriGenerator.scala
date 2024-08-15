@@ -24,7 +24,7 @@ trait EoriGenerator extends Eoris with Generators {
   private val eoriGen: Gen[String] = RegexpGen.from(CustomRegex.eoriPattern)
 
   private def authorisedEoriGen(numberOfAuthorisedEoris: Int): Gen[Seq[String]] =
-    Gen.pick(numberOfAuthorisedEoris, authorisedEoris).map(_.to(Seq))
+    Gen.pick(numberOfAuthorisedEoris, authorisedEoris).map(_.toSeq)
 
   private def invalidEoriGen(numberOfEoris: Int): Gen[Seq[String]] =
     Gen.listOfN(numberOfEoris, eoriGen)
@@ -35,16 +35,7 @@ trait EoriGenerator extends Eoris with Generators {
       invalidEoris    <- invalidEoriGen(numberOfEoris - numberOfAuthorisedEoris)
     } yield authorisedEoris ++ invalidEoris
 
-  protected def eoriGenerator(numberOfAuthorisedEoris: Int): Gen[Seq[String]] = {
-    if (numberOfAuthorisedEoris > authorisedEoris.size) {
-      throw new IllegalArgumentException(
-        s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
-      )
-    }
-    combinedEoriGen(numberOfAuthorisedEoris, numberOfAuthorisedEoris)
-  }
-
-  protected def eoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Int): Gen[Seq[String]] = {
+  private def validateEoriCounts(numberOfEoris: Int, numberOfAuthorisedEoris: Int): Unit = {
     if (numberOfAuthorisedEoris > numberOfEoris) {
       throw new IllegalArgumentException("Number of authorised EORIs cannot be greater than the total number of EORIs")
     }
@@ -54,13 +45,14 @@ trait EoriGenerator extends Eoris with Generators {
         s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
       )
     }
-
-    combinedEoriGen(numberOfEoris, numberOfAuthorisedEoris)
   }
 
-  protected def useEoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Int): Seq[String] =
-    eoriGenerator(numberOfEoris, numberOfAuthorisedEoris).sample.get
+  protected def eoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Option[Int] = None): Gen[Seq[String]] = {
+    val numOfAuthEoris = numberOfAuthorisedEoris.getOrElse(numberOfEoris)
+    validateEoriCounts(numberOfEoris, numOfAuthEoris)
+    combinedEoriGen(numberOfEoris, numOfAuthEoris)
+  }
 
-  protected def useEoriGenerator(numberOfAuthorisedEoris: Int): Seq[String] =
-    eoriGenerator(numberOfAuthorisedEoris, numberOfAuthorisedEoris).sample.get
+  protected def useEoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Option[Int] = None): Seq[String] =
+    eoriGenerator(numberOfEoris, numberOfAuthorisedEoris).sample.get
 }
