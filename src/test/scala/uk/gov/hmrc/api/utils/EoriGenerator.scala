@@ -35,8 +35,14 @@ trait EoriGenerator extends Eoris with Generators {
       invalidEoris    <- invalidEoriGen(numberOfEoris - numberOfAuthorisedEoris)
     } yield authorisedEoris ++ invalidEoris
 
-  protected def eoriGenerator(numberOfAuthorisedEoris: Int): Gen[Seq[String]] =
+  protected def eoriGenerator(numberOfAuthorisedEoris: Int): Gen[Seq[String]] = {
+    if (numberOfAuthorisedEoris > authorisedEoris.size) {
+      throw new IllegalArgumentException(
+        s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
+      )
+    }
     combinedEoriGen(numberOfAuthorisedEoris, numberOfAuthorisedEoris)
+  }
 
   protected def eoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Int): Gen[Seq[String]] = {
     if (numberOfAuthorisedEoris > numberOfEoris) {
@@ -45,7 +51,7 @@ trait EoriGenerator extends Eoris with Generators {
 
     if (numberOfAuthorisedEoris > authorisedEoris.size) {
       throw new IllegalArgumentException(
-        "Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set"
+        s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
       )
     }
 

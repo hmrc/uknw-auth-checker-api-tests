@@ -136,7 +136,7 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
     }
 
     Scenario(
-      "throw an exception with message Number of EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set"
+      "two arguments must throw an exception with message Number of EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set"
     ) {
       When(
         "when the number of authorised eoris is greater than the total number of authorised eoris within the testing set"
@@ -147,7 +147,22 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
         useEoriGenerator(authorisedEoris.size + 2, authorisedEoris.size + 1)
       }
 
-      exception.getMessage shouldBe "Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set"
+      exception.getMessage shouldBe s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
+    }
+
+    Scenario(
+      "one argument must throw an exception with message Number of EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set"
+    ) {
+      When(
+        "when the number of authorised eoris is greater than the total number of authorised eoris within the testing set"
+      )
+      Then("An IllegalArgumentException should be thrown")
+
+      val exception = intercept[IllegalArgumentException] {
+        useEoriGenerator(authorisedEoris.size + 1)
+      }
+
+      exception.getMessage shouldBe s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
     }
   }
 }
