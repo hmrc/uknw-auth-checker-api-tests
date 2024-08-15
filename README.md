@@ -20,7 +20,7 @@ Run tests as follows:
 ./run-tests.sh
 ```
 
-### Testing Approach
+### Testing Approach //TODO: Look at this before merging
 
 This repository makes the use of a dynamic testing approach to follow that of the
 [Stub](https://github.com/hmrc/uknw-auth-checker-api-stub) and [performance tests](https://github.com/hmrc/uknw-auth-checker-api-performance-tests).

@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.utils
 import org.scalacheck.Gen
 import wolfendale.scalacheck.regexp.RegexpGen
 
-trait EoriGenerator extends Eoris {
+trait EoriGenerator extends Eoris with Generators {
 
   private val eoriGen: Gen[String] = RegexpGen.from(CustomRegex.eoriPattern)
 
@@ -52,4 +52,9 @@ trait EoriGenerator extends Eoris {
     combinedEoriGen(numberOfEoris, numberOfAuthorisedEoris)
   }
 
+  protected def useEoriGenerator(numberOfEoris: Int, numberOfAuthorisedEoris: Int): Seq[String] =
+    eoriGenerator(numberOfEoris, numberOfAuthorisedEoris).sample.get
+
+  protected def useEoriGenerator(numberOfAuthorisedEoris: Int): Seq[String] =
+    eoriGenerator(numberOfAuthorisedEoris, numberOfAuthorisedEoris).sample.get
 }
