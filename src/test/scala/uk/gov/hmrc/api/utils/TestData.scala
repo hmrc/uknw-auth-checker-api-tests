@@ -21,7 +21,7 @@ import uk.gov.hmrc.api.utils.resources.responses._
 
 import java.time.{LocalDate, ZonedDateTime}
 
-trait TestData extends Requests200 with ErrorRequests with Responses200 with ErrorResponses {
+trait TestData extends ErrorRequests with ErrorResponses {
 
   def createRequest(localDateTime: LocalDate, eoris: Seq[String]): EisAuthorisationRequest =
     EisAuthorisationRequest(Some(localDateTime), "UKNW", eoris)

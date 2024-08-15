@@ -16,9 +16,20 @@
 
 package uk.gov.hmrc.api.utils.resources.responses
 
-trait Responses200 {
-  val expectedRes200_single: Seq[String] = Seq("GB000000000200")
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.json.*
+import uk.gov.hmrc.api.utils.resources.Iso8601DateTimeWrites
 
-  val expectedRes200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
+import java.time.ZonedDateTime
 
+case class EisErrorsResponse(code: String, message: String, errors: Option[Seq[Errors]] = None)
+
+object EisErrorsResponse {
+  implicit val writes: OWrites[EisErrorsResponse] = (
+    (__ \ "code").write[String] and
+      (__ \ "message").write[String] and
+      (__ \ "errors").writeNullable[Seq[Errors]]
+  )(o => Tuple.fromProductTyped(o))
+
+  implicit val reads: Reads[EisErrorsResponse] = Json.reads[EisErrorsResponse]
 }
