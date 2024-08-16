@@ -14,19 +14,25 @@ sm2 --start NOTIFICATION_OF_PRESENTATION_ALL
 
 ## Tests
 
+### Testing Approach
+
+This repository makes the use of a dynamic testing approach to follow that of the
+[Stub](https://github.com/hmrc/uknw-auth-checker-api-stub)
+and [performance tests](https://github.com/hmrc/uknw-auth-checker-api-performance-tests).
+This works through having a [pre-determined set of authorised EORIs](src/test/scala/uk/gov/hmrc/api/utils/Eoris.scala)
+and a [custom EORI generator](src/test/scala/uk/gov/hmrc/api/utils/EoriGenerator.scala).
+
+The EORI generator allows a chosen number of EORIs and a chosen number of valid EORIs (up to the number of EORIs in the
+predetermined list) to be generated. The generator will output a sequence with the correct combination based on the
+input.
+
+### Running the tests
+
 Run tests as follows:
 
 ```bash
 ./run-tests.sh
 ```
-
-### Testing Approach
-
-This repository makes the use of a dynamic testing approach to follow that of the
-[Stub](https://github.com/hmrc/uknw-auth-checker-api-stub) and [performance tests](https://github.com/hmrc/uknw-auth-checker-api-performance-tests).
-This works through having a [pre-determined set of authorised EORIs](src/test/scala/uk/gov/hmrc/api/utils/Eoris.scala) and a [custom EORI generator](src/test/scala/uk/gov/hmrc/api/utils/EoriGenerator.scala).
-
-The EORI generator allows a chosen number of EORIs and a chosen number of valid EORIs (up to the number of EORIs in the predetermined list) to be generated. The generator will output a sequence with the correct combination based on the input.
 
 ## Running security tests with ZAP - on a local machine
 
@@ -36,6 +42,7 @@ results in your system browser.
 ```bash
 ./run-tests-zap.sh
 ``` 
+
 Results of your ZAP run will be placed in `dast-config-manager/target/dast-reports`.
 The index.html is the root page to view the results in a browser.
 
@@ -50,7 +57,8 @@ Run tests as follows:
 ./run-tests-jenkins.sh
 ```
 
-The Jenkins test script differs from run-tests.sh only in that it sets the `-Dzap.proxy` argument to true to allow security tests in Jenkins to work.
+The Jenkins test script differs from run-tests.sh only in that it sets the `-Dzap.proxy` argument to true to allow
+security tests in Jenkins to work.
 
 > The reason we don't use `run-tests-zap.sh` in the Jenkins pipelines is because of all the dast-config-manager set up
 > in the bash script that's not required in the pipeline, as the job builders there take care of it.
@@ -94,4 +102,5 @@ This is a sbt command alias specific to this project. It will format the code an
 
 ## License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under
+the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
