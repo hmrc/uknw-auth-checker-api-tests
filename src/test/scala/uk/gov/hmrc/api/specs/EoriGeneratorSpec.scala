@@ -152,4 +152,14 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
       exception.getMessage shouldBe s"Number of authorised EORIs cannot be greater than the total number of authorised EORIs within the authorised EORI test set (${authorisedEoris.size})"
     }
   }
+
+  Scenario("garbage generator should generate a list of random strings") {
+    When("passed a size")
+    Then("A list of random strings should be generated")
+    val randomNumber = fetchRandomNumber(1, 100)
+    val strings      = useGarbageGenerator(randomNumber)
+
+    strings.size shouldBe randomNumber
+  }
+
 }

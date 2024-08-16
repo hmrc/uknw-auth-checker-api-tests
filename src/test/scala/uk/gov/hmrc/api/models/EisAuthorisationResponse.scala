@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources.responses
+package uk.gov.hmrc.api.models
 
-import play.api.libs.json.{Json, OFormat, Writes}
+import play.api.libs.json.*
 import uk.gov.hmrc.api.utils.resources.Iso8601DateTimeWrites
 
 import java.time.ZonedDateTime
 
-case class EisAuthorisationsResponse(date: ZonedDateTime, eoris: Seq[EisAuthorisationResponse])
+case class EisAuthorisationsResponse(date: ZonedDateTime, eoris: Seq[EisAuthorisationResponse], expectedHttpCode: Int)
+    extends Response {
+  def toJsonString: String = Json.toJson(this).toString()
+  def httpCode: Int        = expectedHttpCode
+}
 
 object EisAuthorisationsResponse {
   implicit val zonedDateTimeWrites: Writes[ZonedDateTime] = Iso8601DateTimeWrites.iso8601DateTimeWrites
-  implicit val format: OFormat[EisAuthorisationsResponse] = Json.format[EisAuthorisationsResponse]
+
+  implicit val writes: OWrites[EisAuthorisationsResponse] = OWrites[EisAuthorisationsResponse] { response =>
+    Json.obj(
+      "date"  -> response.date,
+      "eoris" -> Json.toJson(response.eoris)
+    )
+  }
+
+  implicit val reads: Reads[EisAuthorisationsResponse] = Json.reads[EisAuthorisationsResponse]
 }
 
 case class EisAuthorisationResponse(eori: String, authorised: Boolean)

@@ -18,35 +18,29 @@ package uk.gov.hmrc.api.models
 
 import play.api.libs.json.*
 
-case class EisErrorsResponse(codeAndMessage: StatusAndMessage, errors: Option[Seq[Errors]] = None)
+case class EisErrorsResponse(codeAndMessage: StatusAndMessage, errors: Option[Seq[Errors]] = None) extends Response {
+  def toJsonString: String = Json.toJson(this).toString()
+  def httpCode: Int        = codeAndMessage.httpCode
+}
 
 object EisErrorsResponse {
-  implicit val writes: OWrites[EisErrorsResponse] = (response: EisErrorsResponse) => {
-    val baseJson = Json.obj(
-      "code" -> response.codeAndMessage.code,
+  implicit val writes: OWrites[EisErrorsResponse] = OWrites[EisErrorsResponse] { response =>
+    val responseErrors = response.errors.map(errors => Json.obj("errors" -> Json.toJson(errors))).getOrElse(Json.obj())
+
+    Json.obj(
+      "code"    -> response.codeAndMessage.code,
       "message" -> response.codeAndMessage.message
-    )
-
-    response.errors match {
-      case Some(errors) => baseJson + ("errors" -> Json.toJson(errors))
-      case None => baseJson
-    }
+    ) ++ responseErrors
   }
 
-  implicit val reads: Reads[EisErrorsResponse] = (json: JsValue) => {
+  implicit val reads: Reads[EisErrorsResponse] = (json: JsValue) =>
     for {
-      code <- (json \ "code").validate[String]
-      message <- (json \ "message").validate[String]
-      errors <- (json \ "errors").validateOpt[Seq[Errors]]
-      statusAndMessage <- (code, message) match {
-        case ("UNAUTHORIZED", "Invalid bearer token") => JsSuccess(StatusAndMessage.InvalidBearerToken)
-        case ("UNAUTHORIZED", "Bearer token not supplied") => JsSuccess(StatusAndMessage.BearerTokenNotSupplied)
-        case ("UNAUTHORIZED", "The bearer token is invalid, missing, or expired") => JsSuccess(StatusAndMessage.Unauthorized)
-        case ("METHOD_NOT_ALLOWED", "This method is not supported") => JsSuccess(StatusAndMessage.MethodNotAllowed)
-        case ("NOT_ACCEPTABLE", "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid") => JsSuccess(StatusAndMessage.NotAcceptable)
-        case ("INTERNAL_SERVER_ERROR", "Unexpected internal server error") => JsSuccess(StatusAndMessage.InternalServerError)
-        case _ => JsError("Unknown StatusAndMessage")
-      }
+      code             <- (json \ "code").validate[String]
+      message          <- (json \ "message").validate[String]
+      errors           <- (json \ "errors").validateOpt[Seq[Errors]]
+      statusAndMessage <- StatusAndMessage.statusAndMessages.get((code, message)) match {
+                            case Some(status) => JsSuccess(status)
+                            case None         => JsError("Cannot deserialize unknown StatusAndMessage")
+                          }
     } yield EisErrorsResponse(statusAndMessage, errors)
-  }
 }

@@ -16,23 +16,22 @@
 
 package uk.gov.hmrc.api.utils
 
-import uk.gov.hmrc.api.utils.resources.requests._
-import uk.gov.hmrc.api.utils.resources.responses._
+import uk.gov.hmrc.api.models
+import uk.gov.hmrc.api.models.{EisAuthorisationRequest, EisAuthorisationResponse, EisAuthorisationsResponse}
 
 import java.time.{LocalDate, ZonedDateTime}
 
-trait TestData extends ErrorRequests with ErrorResponses {
+trait TestData extends Eoris {
 
   def createRequest(localDateTime: LocalDate, eoris: Seq[String]): EisAuthorisationRequest =
     EisAuthorisationRequest(Some(localDateTime), "UKNW", eoris)
 
-  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String]): EisAuthorisationsResponse = {
-    val defaultAuthorisation: Boolean = true
-    EisAuthorisationsResponse(
+  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String], httpCode: Int): EisAuthorisationsResponse =
+    models.EisAuthorisationsResponse(
       zonedDate,
       eoris.map { anEori =>
-        EisAuthorisationResponse(anEori, defaultAuthorisation)
-      }
+        EisAuthorisationResponse(anEori, authorisedEoris.contains(anEori))
+      },
+      httpCode
     )
-  }
 }

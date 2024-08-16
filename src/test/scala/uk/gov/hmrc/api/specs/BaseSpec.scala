@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.{Assertion, GivenWhenThen}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{Assertion, GivenWhenThen}
 import play.api.libs.ws.StandaloneWSResponse
+import uk.gov.hmrc.api.models.Response
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
@@ -31,19 +32,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   protected val localNow: LocalDate     = LocalDate.now
 
   implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
-    def hasStatusAndBody(response: (Int, String)): Assertion = {
-      wsResponse.status        shouldBe response._1
-      wsResponse.body.toString shouldBe response._2
-    }
-
-    def isBadRequest(response: String): Assertion = {
-      wsResponse.status        shouldBe 400
-      wsResponse.body.toString shouldBe response
-    }
-
-    def isMethodNotAllowed(response: String): Assertion = {
-      wsResponse.status        shouldBe 405
-      wsResponse.body.toString shouldBe response
+    def hasStatusAndBody(response: Response): Assertion = {
+      wsResponse.status        shouldBe response.httpCode
+      wsResponse.body.toString shouldBe response.toJsonString
     }
 
     // This is for the HEAD request which doesn't receive a body

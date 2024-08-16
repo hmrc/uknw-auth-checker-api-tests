@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources.requests
+package uk.gov.hmrc.api.models
 
-import play.api.libs.json.{Json, OFormat}
-
-import java.time.LocalDate
-
-case class EisAuthorisationRequest(validityDate: Option[LocalDate], authorised: String, eoris: Seq[String]) {}
-
-object EisAuthorisationRequest {
-  implicit val format: OFormat[EisAuthorisationRequest] = Json.format[EisAuthorisationRequest]
+trait Response {
+  def toJsonString: String
+  def httpCode: Int
 }

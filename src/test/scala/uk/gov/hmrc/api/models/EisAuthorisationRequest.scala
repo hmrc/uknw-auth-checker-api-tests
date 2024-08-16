@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.models
 
-import org.scalacheck.Gen
+import play.api.libs.json.{Json, OFormat}
 
-trait Generators {
-  private val maxStringSize = 24
+import java.time.LocalDate
 
-  private val specificSizeAlphaNumStrGen: Gen[String] = for {
-    length <- Gen.choose(1, maxStringSize)
-    str    <- Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString)
-  } yield str
+case class EisAuthorisationRequest(validityDate: Option[LocalDate], authorised: String, eoris: Seq[String]) {}
 
-  protected def fetchRandomNumber(min: Int, max: Int): Int = Gen.choose(min, max).sample.get
-
-  protected def garbageGenerator(i: Int): Gen[Seq[String]] = Gen.listOfN(i, specificSizeAlphaNumStrGen)
-
-  protected def useGarbageGenerator(amountOfValues: Int): Seq[String] = garbageGenerator(amountOfValues).sample.get
+object EisAuthorisationRequest {
+  implicit val format: OFormat[EisAuthorisationRequest] = Json.format[EisAuthorisationRequest]
 }

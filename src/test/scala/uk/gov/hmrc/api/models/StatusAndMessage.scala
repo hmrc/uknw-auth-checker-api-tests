@@ -28,62 +28,60 @@ sealed trait StatusAndMessage {
 
 object StatusAndMessage {
 
-  case object InvalidBearerToken extends StatusAndMessage {
-    override val code: String = "UNAUTHORIZED"
-    override val message: String = "Invalid bearer token"
-    override val httpCode: Int = 401
-  }
-
-  case object BearerTokenNotSupplied extends StatusAndMessage {
-    override val code: String = "UNAUTHORIZED"
-    override val message: String = "Bearer token not supplied"
-    override val httpCode: Int = 401
+  case object BadRequest extends StatusAndMessage {
+    override val code: String    = "BAD_REQUEST"
+    override val message: String = "Bad request"
+    override val httpCode: Int   = 400
   }
 
   case object Unauthorized extends StatusAndMessage {
-    override val code: String = "UNAUTHORIZED"
+    override val code: String    = "UNAUTHORIZED"
     override val message: String = "The bearer token is invalid, missing, or expired"
-    override val httpCode: Int = 401
+    override val httpCode: Int   = 401
   }
 
   case object MethodNotAllowed extends StatusAndMessage {
-    override val code: String = "METHOD_NOT_ALLOWED"
+    override val code: String    = "METHOD_NOT_ALLOWED"
     override val message: String = "This method is not supported"
-    override val httpCode: Int = 405
+    override val httpCode: Int   = 405
   }
 
   case object NotAcceptable extends StatusAndMessage {
-    override val code: String = "NOT_ACCEPTABLE"
-    override val message: String = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
-    override val httpCode: Int = 406
+    override val code: String    = "NOT_ACCEPTABLE"
+    override val message: String =
+      "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+    override val httpCode: Int   = 406
   }
 
   case object InternalServerError extends StatusAndMessage {
-    override val code: String = "INTERNAL_SERVER_ERROR"
+    override val code: String    = "INTERNAL_SERVER_ERROR"
     override val message: String = "Unexpected internal server error"
-    override val httpCode: Int = 500
+    override val httpCode: Int   = 500
   }
 
-  private val statusAndMessages: Map[(String, String), StatusAndMessage] = Map(
-    ("UNAUTHORIZED", "Invalid bearer token") -> InvalidBearerToken,
-    ("UNAUTHORIZED", "Bearer token not supplied") -> BearerTokenNotSupplied,
+  val statusAndMessages: Map[(String, String), StatusAndMessage] = Map(
+    ("BAD_REQUEST", "Bad request")                                       -> BadRequest,
     ("UNAUTHORIZED", "The bearer token is invalid, missing, or expired") -> Unauthorized,
-    ("METHOD_NOT_ALLOWED", "This method is not supported") -> MethodNotAllowed,
-    ("NOT_ACCEPTABLE", "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid") -> NotAcceptable,
-    ("INTERNAL_SERVER_ERROR", "Unexpected internal server error") -> InternalServerError
+    ("METHOD_NOT_ALLOWED", "This method is not supported")               -> MethodNotAllowed,
+    (
+      "NOT_ACCEPTABLE",
+      "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+    )                                                                    -> NotAcceptable,
+    ("INTERNAL_SERVER_ERROR", "Unexpected internal server error")        -> InternalServerError
   )
 
-  implicit val writes: Writes[StatusAndMessage] = (o: StatusAndMessage) => Json.obj(
-    "code" -> o.code,
-    "message" -> o.message
-  )
+  implicit val writes: Writes[StatusAndMessage] = (o: StatusAndMessage) =>
+    Json.obj(
+      "code"    -> o.code,
+      "message" -> o.message
+    )
 
   implicit val reads: Reads[StatusAndMessage] = (json: JsValue) => {
-    val code = (json \ "code").as[String]
+    val code    = (json \ "code").as[String]
     val message = (json \ "message").as[String]
-    statusAndMessages.get((code, message))
+    statusAndMessages
+      .get((code, message))
       .map(JsSuccess(_))
-      .getOrElse(JsError("Unknown StatusAndMessage"))
+      .getOrElse(JsError("Cannot deserialize unknown StatusAndMessage"))
   }
 }
-

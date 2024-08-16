@@ -20,48 +20,54 @@ import play.api.libs.json.*
 
 sealed trait Errors {
   def code: String
-
   def message: String
 }
 
 object Errors {
 
   case class InvalidEoriFormat(eori: String) extends Errors {
-    override val code: String = "INVALID_FORMAT"
+    override val code: String    = "INVALID_FORMAT"
     override val message: String = s"$eori is not a supported EORI number"
   }
 
-  case object MissingEoriField extends Errors {
-    override val code: String = "INVALID_FORMAT"
+  case object MissingEoriField extends Errors { // TODO: In the future, add a test for this in the authorisation spec as it is missing.
+    override val code: String    = "INVALID_FORMAT"
     override val message: String = "eoris field missing from JSON"
   }
 
   case object WrongNumberOfEoris extends Errors {
-    override val code: String = "INVALID_FORMAT"
+    override val code: String    = "INVALID_FORMAT"
     override val message: String = "The request payload must contain between 1 and 3000 EORI entries"
   }
 
-  implicit val invalidEoriFormatFormat: OFormat[InvalidEoriFormat] = Json.format[InvalidEoriFormat]
-  implicit val missingEoriFieldFormat: OFormat[MissingEoriField.type] = Json.format[MissingEoriField.type]
+  implicit val invalidEoriFormatFormat: OFormat[InvalidEoriFormat]        = Json.format[InvalidEoriFormat]
+  implicit val missingEoriFieldFormat: OFormat[MissingEoriField.type]     = Json.format[MissingEoriField.type]
   implicit val wrongNumberOfEorisFormat: OFormat[WrongNumberOfEoris.type] = Json.format[WrongNumberOfEoris.type]
 
-  implicit val writes: Writes[Errors] = {
-    case e: InvalidEoriFormat => Json.toJson(e)
-    case MissingEoriField => Json.toJson(MissingEoriField)
-    case WrongNumberOfEoris => Json.toJson(WrongNumberOfEoris)
+  implicit val errorsWrites: Writes[Errors] = Writes[Errors] {
+    case InvalidEoriFormat(eori) =>
+      Json.obj(
+        "code"    -> "INVALID_FORMAT",
+        "message" -> s"$eori is not a supported EORI number",
+        "path"    -> "eoris"
+      )
+    case error                   =>
+      Json.obj(
+        "code"    -> error.code,
+        "message" -> error.message,
+        "path"    -> "eoris"
+      )
   }
 
-  implicit val reads: Reads[Errors] = (json: JsValue) => {
+  implicit val reads: Reads[Errors] = (json: JsValue) =>
     (json \ "code").as[String] match {
       case "INVALID_FORMAT" =>
         (json \ "message").as[String] match {
-          case msg if msg.contains("EORI number") => json.validate[InvalidEoriFormat]
-          case "eoris field missing from JSON" => JsSuccess(MissingEoriField)
+          case msg if msg.contains("is not a supported EORI number")              => json.validate[InvalidEoriFormat]
+          case "eoris field missing from JSON"                                    => JsSuccess(MissingEoriField)
           case "The request payload must contain between 1 and 3000 EORI entries" => JsSuccess(WrongNumberOfEoris)
-          case _ => JsError("Unknown error type for INVALID_FORMAT")
+          case _                                                                  => JsError("Unknown error type for INVALID_FORMAT")
         }
-      case _ => JsError("Unknown error code")
+      case _                => JsError("Cannot deserialize an unknown error")
     }
-  }
 }
-
