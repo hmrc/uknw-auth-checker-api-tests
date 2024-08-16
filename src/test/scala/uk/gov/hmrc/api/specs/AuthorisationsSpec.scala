@@ -17,6 +17,7 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.models.{EisErrorsResponse, StatusAndMessage}
 import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.{EoriGenerator, TestData}
 
@@ -75,6 +76,8 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val request  = createRequest(localNow, eoris)
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+
+
 
       Then("I am returned a status code 400")
       response isBadRequest expectedRes400_singleEori // TODO: Create a way to have a dynamic error responses
@@ -227,6 +230,11 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       When("a POST authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, acceptInput = "invalid")
+
+      val expectedResponse = Json.toJson(EisErrorsResponse(StatusAndMessage.NotAcceptable, None)) //TODO: REwork this
+
+      println("\n\n\n" + expectedResponse.toString + "\n\n\n")
+      println("\n\n\n" + response + "\n\n\n")
 
       Then("I am returned a status code 406")
       response hasStatusAndBody (406, expectedRes406) // TODO: Create a way to have a dynamic error responses
