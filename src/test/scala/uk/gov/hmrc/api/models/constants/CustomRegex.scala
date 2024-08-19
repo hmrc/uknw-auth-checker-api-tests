@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.models.constants
 
 object CustomRegex {
   val eoriPattern: String = "^(GB|XI)[0-9]{12}|(GB|XI)[0-9]{15}$"
+  val invalidFormatOfEorisPattern: String = "^.*(format of EORI).*$"
 }

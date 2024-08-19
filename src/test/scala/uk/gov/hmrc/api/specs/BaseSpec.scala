@@ -19,11 +19,15 @@ package uk.gov.hmrc.api.specs
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{Assertion, GivenWhenThen}
+import play.api.http.Status
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.StandaloneWSResponse
-import uk.gov.hmrc.api.models.Response
+import play.api.mvc.{Result, Results}
+import uk.gov.hmrc.api.models.{AuthorisationsResponse, Response}
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
+import scala.concurrent.Await
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
@@ -37,8 +41,19 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       wsResponse.body.toString shouldBe response.toJsonString
     }
 
+    def hasStatusAndBodyTest(response: (Int, AuthorisationsResponse)): Assertion = {
+      wsResponse.status        shouldBe response._1
+      wsResponse.body.toString shouldBe Json.toJson(response._2).toString
+    }
+
+    def hasStatusAndBodyJsValue(response: (Int, JsValue)): Assertion = {
+      wsResponse.status        shouldBe response._1
+      wsResponse.body.toString shouldBe Json.toJson(response._2).toString
+    }
+
     // This is for the HEAD request which doesn't receive a body
     def isMethodNotAllowed: Assertion =
       wsResponse.status shouldBe 405
+    
   }
 }

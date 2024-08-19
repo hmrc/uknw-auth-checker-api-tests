@@ -17,6 +17,7 @@
 package uk.gov.hmrc.api.utils
 
 import org.scalacheck.Gen
+import uk.gov.hmrc.api.models.constants.CustomRegex
 import wolfendale.scalacheck.regexp.RegexpGen
 
 trait EoriGenerator extends Eoris with Generators {

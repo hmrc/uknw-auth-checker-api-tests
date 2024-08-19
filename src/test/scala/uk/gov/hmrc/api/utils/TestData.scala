@@ -17,14 +17,14 @@
 package uk.gov.hmrc.api.utils
 
 import uk.gov.hmrc.api.models
-import uk.gov.hmrc.api.models.{EisAuthorisationRequest, EisAuthorisationResponse, EisAuthorisationsResponse}
+import uk.gov.hmrc.api.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse, EisAuthorisationRequest, EisAuthorisationResponse, EisAuthorisationsResponse}
 
 import java.time.{LocalDate, ZonedDateTime}
 
 trait TestData extends Eoris {
 
-  def createRequest(localDateTime: LocalDate, eoris: Seq[String]): EisAuthorisationRequest =
-    EisAuthorisationRequest(Some(localDateTime), "UKNW", eoris)
+  def createRequest(localDateTime: LocalDate, eoris: Seq[String]): AuthorisationRequest =
+    AuthorisationRequest(eoris)
 
   def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String], httpCode: Int): EisAuthorisationsResponse =
     models.EisAuthorisationsResponse(
@@ -33,5 +33,13 @@ trait TestData extends Eoris {
         EisAuthorisationResponse(anEori, authorisedEoris.contains(anEori))
       },
       httpCode
+    )
+
+  def createResponseTest(zonedDate: ZonedDateTime, eoris: Seq[String]): AuthorisationsResponse =
+    AuthorisationsResponse(
+      zonedDate,
+      eoris.map { anEori =>
+        AuthorisationResponse(anEori, authorisedEoris.contains(anEori))
+      }
     )
 }
