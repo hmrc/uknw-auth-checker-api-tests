@@ -18,7 +18,7 @@ package uk.gov.hmrc.api.models.constants
 
 object JsonErrorMessages {
   val eorisFieldMissing: String = "eoris field missing from JSON"
-  val expectedJsObject:  String = "error.expected.jsobject"
-  val jsonMalformed:     String = "JSON is malformed"
-  val pathMissing:       String = "error.path.missing"
+  val expectedJsObject: String  = "error.expected.jsobject"
+  val jsonMalformed: String     = "JSON is malformed"
+  val pathMissing: String       = "error.path.missing"
 }

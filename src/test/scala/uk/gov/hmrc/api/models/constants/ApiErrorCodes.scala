@@ -17,13 +17,13 @@
 package uk.gov.hmrc.api.models.constants
 
 object ApiErrorCodes {
-  val badRequest:               String = "BAD_REQUEST"
-  val forbidden:                String = "FORBIDDEN"
-  val internalServerError:      String = "INTERNAL_SERVER_ERROR"
-  val invalidFormat:            String = "INVALID_FORMAT"
+  val badRequest: String               = "BAD_REQUEST"
+  val forbidden: String                = "FORBIDDEN"
+  val internalServerError: String      = "INTERNAL_SERVER_ERROR"
+  val invalidFormat: String            = "INVALID_FORMAT"
   val matchingResourceNotFound: String = "MATCHING_RESOURCE_NOT_FOUND"
-  val methodNotAllowed:         String = "METHOD_NOT_ALLOWED"
-  val notAcceptable:            String = "NOT_ACCEPTABLE"
-  val serviceUnavailable:       String = "SERVICE_UNAVAILABLE"
-  val unauthorized:             String = "UNAUTHORIZED"
+  val methodNotAllowed: String         = "METHOD_NOT_ALLOWED"
+  val notAcceptable: String            = "NOT_ACCEPTABLE"
+  val serviceUnavailable: String       = "SERVICE_UNAVAILABLE"
+  val unauthorized: String             = "UNAUTHORIZED"
 }

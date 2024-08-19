@@ -26,16 +26,7 @@ trait TestData extends Eoris {
   def createRequest(localDateTime: LocalDate, eoris: Seq[String]): AuthorisationRequest =
     AuthorisationRequest(eoris)
 
-  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String], httpCode: Int): EisAuthorisationsResponse =
-    models.EisAuthorisationsResponse(
-      zonedDate,
-      eoris.map { anEori =>
-        EisAuthorisationResponse(anEori, authorisedEoris.contains(anEori))
-      },
-      httpCode
-    )
-
-  def createResponseTest(zonedDate: ZonedDateTime, eoris: Seq[String]): AuthorisationsResponse =
+  def createResponse(zonedDate: ZonedDateTime, eoris: Seq[String]): AuthorisationsResponse =
     AuthorisationsResponse(
       zonedDate,
       eoris.map { anEori =>

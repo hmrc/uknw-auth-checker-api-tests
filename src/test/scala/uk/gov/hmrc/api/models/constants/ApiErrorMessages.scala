@@ -17,16 +17,18 @@
 package uk.gov.hmrc.api.models.constants
 
 object ApiErrorMessages {
-  val badRequest:               String           = "Bad request"
-  val forbidden:                String           = "You are not allowed to access this resource"
-  val internalServerError:      String           = "Unexpected internal server error"
-  val invalidEori:              String => String = eori => s"$eori is not a supported EORI number"
-  val invalidEoriCount:         Int => String    = eoriMax => s"The request payload must contain between 1 and $eoriMax EORI entries"
-  val invalidRequest:           String           = "Invalid request"
-  val matchingResourceNotFound: String           = "Matching resource not found"
-  val methodNotAllowed:         String           = "This method is not supported"
-  val notAcceptable:            String           = "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
-  val serviceUnavailable:       String           = "Server is currently unable to handle the incoming requests"
+  val badRequest: String               = "Bad request"
+  val forbidden: String                = "You are not allowed to access this resource"
+  val internalServerError: String      = "Unexpected internal server error"
+  val invalidEori: String => String    = eori => s"$eori is not a supported EORI number"
+  val invalidEoriCount: Int => String  = eoriMax =>
+    s"The request payload must contain between 1 and $eoriMax EORI entries"
+  val invalidRequest: String           = "Invalid request"
+  val matchingResourceNotFound: String = "Matching resource not found"
+  val methodNotAllowed: String         = "This method is not supported"
+  val notAcceptable: String            =
+    "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
+  val serviceUnavailable: String       = "Server is currently unable to handle the incoming requests"
 
   val unauthorized: String = "The bearer token is invalid, missing, or expired"
 }
