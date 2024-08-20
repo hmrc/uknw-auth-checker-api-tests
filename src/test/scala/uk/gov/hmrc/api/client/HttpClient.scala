@@ -30,45 +30,35 @@ trait HttpClient {
   implicit val ec: ExecutionContext          = ExecutionContext.global
 
   val wsClient: StandaloneAhcWSClient = StandaloneAhcWSClient()
-  val dummyJson: JsValue              = Json.toJson("""{"data": "garbage" }""")
+  val dummyJson: JsValue              = Json.obj("data" -> "garbage")
 
   private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest = {
-    val request: StandaloneWSRequest = wsClient
+    val request = wsClient
       .url(url)
       .withHttpHeaders(headers: _*)
-    if (isEnabled) {
-      request.withProxyServer(proxyServer)
-    } else {
-      request
-    }
+    if (isEnabled) request.withProxyServer(proxyServer) else request
   }
-
-  def get(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .get()
 
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .post(bodyAsJson)
 
-  def delete(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .delete()
-
-  def head(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .head()
-
-  def option(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .options()
-
-  def patch(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .patch(dummyJson)
-
-  def put(url: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
-      .put(dummyJson)
-
+  def executeRequest(
+    method: String,
+    url: String,
+    headers: Seq[(String, String)] = Seq.empty,
+    body: JsValue = dummyJson
+  ): Future[StandaloneWSResponse] = {
+    val request = defaultRequest(url, headers: _*)
+    method.toUpperCase match {
+      case "GET"     => request.get()
+      case "POST"    => request.post(body)
+      case "DELETE"  => request.delete()
+      case "HEAD"    => request.head()
+      case "OPTIONS" => request.options()
+      case "PATCH"   => request.patch(body)
+      case "PUT"     => request.put(body)
+      case _         => throw new IllegalArgumentException(s"Unsupported HTTP method: $method")
+    }
+  }
 }

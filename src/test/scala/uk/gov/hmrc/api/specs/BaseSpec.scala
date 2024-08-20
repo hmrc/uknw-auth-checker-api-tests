@@ -16,13 +16,19 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.{Assertion, GivenWhenThen}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.{Assertion, GivenWhenThen}
 import play.api.libs.ws.StandaloneWSResponse
+import play.api.mvc.Result
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
@@ -30,24 +36,16 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
   protected val localNow: LocalDate     = LocalDate.now
 
+  implicit val system: ActorSystem = ActorSystem("TestActorSystem")
+  implicit val mat: Materializer   = SystemMaterializer(system).materializer
+
   implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
-    def hasStatusAndBody(response: (Int, String)): Assertion = {
-      wsResponse.status        shouldBe response._1
-      wsResponse.body.toString shouldBe response._2
-    }
 
-    def isBadRequest(response: String): Assertion = {
-      wsResponse.status        shouldBe 400
-      wsResponse.body.toString shouldBe response
-    }
+    def hasStatusAndBody(result: Result): Assertion = {
+      val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
 
-    def isMethodNotAllowed(response: String): Assertion = {
-      wsResponse.status        shouldBe 405
-      wsResponse.body.toString shouldBe response
+      wsResponse.status        shouldBe result.header.status
+      wsResponse.body.toString shouldBe body
     }
-
-    // This is for the HEAD request which doesn't receive a body
-    def isMethodNotAllowed: Assertion =
-      wsResponse.status shouldBe 405
   }
 }

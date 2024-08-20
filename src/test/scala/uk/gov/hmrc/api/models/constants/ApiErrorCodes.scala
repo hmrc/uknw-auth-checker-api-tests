@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources.requests
+package uk.gov.hmrc.api.models.constants
 
-trait Requests200 {
-  val req200_single: Seq[String] = Seq("GB000000000200")
-
-  val req200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
-
+object ApiErrorCodes {
+  val badRequest: String               = "BAD_REQUEST"
+  val forbidden: String                = "FORBIDDEN"
+  val internalServerError: String      = "INTERNAL_SERVER_ERROR"
+  val invalidFormat: String            = "INVALID_FORMAT"
+  val matchingResourceNotFound: String = "MATCHING_RESOURCE_NOT_FOUND"
+  val methodNotAllowed: String         = "METHOD_NOT_ALLOWED"
+  val notAcceptable: String            = "NOT_ACCEPTABLE"
+  val serviceUnavailable: String       = "SERVICE_UNAVAILABLE"
+  val unauthorized: String             = "UNAUTHORIZED"
 }

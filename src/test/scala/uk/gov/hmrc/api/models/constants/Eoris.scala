@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources.requests
+package uk.gov.hmrc.api.models.constants
 
-trait ErrorRequests {
-  val req400_singleEori: Seq[String]   = Seq("ABCD000000000200")
-  val req400_multipleEori: Seq[String] = Seq("ABCD000000000200", "EFGH000000000200")
-  val req400_noEoris: Seq[String]      = Seq.empty
+trait Eoris {
 
-  val req500_internalError: Seq[String] = Seq("GB000000000500")
-  val req400_tooManyEoris: Seq[String]  = Seq(
+  val authorisedEoris: Set[String] = Set(
     "GB837826880909874",
     "XI968840631629",
     "XI436105828614",
@@ -3022,7 +3018,6 @@ trait ErrorRequests {
     "XI005516834042",
     "XI804750399201361",
     "GB843625004921645",
-    "GB618696708714294",
     "GB618696708714294"
   )
 

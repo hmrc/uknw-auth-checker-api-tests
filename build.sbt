@@ -7,6 +7,7 @@ lazy val root = (project in file("."))
   )
 
 Test / javaOptions += "-Dlogger.resource=logback-test.xml"
+Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.ScalaLibrary
 
 addCommandAlias("fmtAll", ";scalafmtSbt;scalafmtAll;")
 addCommandAlias("preCommit", ";clean;compile;fmtAll;")

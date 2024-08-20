@@ -16,11 +16,16 @@
 
 package uk.gov.hmrc.api.specs
 
+import play.api.http.Status
+import play.api.http.Status.OK
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.models.*
+import uk.gov.hmrc.api.models.constants.ApiErrorMessages
 import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
+import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
-class AuthorisationsSpec extends BaseSpec with TestData {
+class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   private val myAuthService           = new AuthService
   private val authBearerToken: String = myAuthService.getAuthBearerToken
 
@@ -38,27 +43,39 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("Happy path with single EORI - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req200_single)
+      val eoris = useEoriGenerator(1, Some(1))
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      val expectedResponse = AuthorisationsResponse(
+        zonedNow,
+        authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
+      ).toResult(expectedStatus = 200)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response         = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
-      val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_single))
-
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody (200, expectedResponse.toString())
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req200_multiple)
+
+      val eoris = useEoriGenerator(fetchRandomNumber(2, authorisedEoris.size))
+
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response         = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
-      val expectedResponse = Json.toJson(createResponse(zonedNow, expectedRes200_multiple))
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse = AuthorisationsResponse(
+        zonedNow,
+        authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
+      ).toResult(expectedStatus = OK)
 
       Then("I am returned a status code 200")
-      response hasStatusAndBody (200, expectedResponse.toString())
+      response hasStatusAndBody expectedResponse
     }
   }
 
@@ -68,48 +85,77 @@ class AuthorisationsSpec extends BaseSpec with TestData {
       Given("a bearer token")
 
       And("an invalid payload")
-      val request  = createRequest(localNow, req400_singleEori)
+      val eoris                = useGarbageGenerator(1)
+      val authorisationRequest = AuthorisationRequest(eoris)
+
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = Seq(invalidEoriApiError(eoris.head))
+
+      val expectedResponse = BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
-      response isBadRequest expectedRes400_singleEori
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("400 Bad Eoris") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(localNow, req400_multipleEori)
+
+      val eoris = useGarbageGenerator(
+        authorisedEoris.size
+      )
+
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = eoris.map(eori => invalidEoriApiError(eori))
+
+      val expectedResponse = BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
-      response isBadRequest expectedRes400_multipleEori
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("400 Not enough EORIS (0)") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(localNow, req400_noEoris)
+      val authorisationRequest = AuthorisationRequest(Seq.empty)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = Seq(InvalidEoriCountApiError)
+
+      val expectedResponse =
+        BadRequestApiError(errors)
 
       Then("I am returned a status code 400")
-      response isBadRequest expectedRes400_wrongNumberOfEoris
+      response hasStatusAndBody expectedResponse.toResult
     }
 
     Scenario("400 Too many EORIS (3001)") {
       Given("a bearer token")
       And("an invalid payload")
-      val request = createRequest(localNow, req400_tooManyEoris)
+      val eoris                = useEoriGenerator(authorisedEoris.size + 10, Some(authorisedEoris.size))
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+
+      val errors = Seq(InvalidEoriCountApiError)
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse =
+        BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
-      response isBadRequest expectedRes400_wrongNumberOfEoris
+      response hasStatusAndBody expectedResponse
     }
   }
 
@@ -117,93 +163,63 @@ class AuthorisationsSpec extends BaseSpec with TestData {
 
     Scenario("Invalid Bearer Token") {
       Given("an invalid bearer token")
+      val eoris                  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
       val anInvalidToken: String = "Invalid Token"
+
       And("a valid payload")
-      val request                = createRequest(localNow, req200_multiple)
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), anInvalidToken)
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), anInvalidToken)
+
+      val expectedResponse =
+        UnauthorizedApiError(ApiErrorMessages.unauthorized).toResult
 
       Then("I am returned a status code 401")
-      response hasStatusAndBody (401, expectedRes401_unauthorized)
+      response hasStatusAndBody expectedResponse
 
     }
 
     Scenario("Missing Bearer Token") {
       Given("There's no bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req200_multiple)
+
+      val eoris                = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request))
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest))
+
+      val expectedResponse =
+        UnauthorizedApiError(ApiErrorMessages.unauthorized).toResult
 
       Then("I am returned a status code 401")
-      response hasStatusAndBody (401, expectedRes401_unauthorized)
+      response hasStatusAndBody expectedResponse
     }
 
   }
 
   Feature("405, METHOD_NOT_ALLOWED case scenarios") {
 
-    Scenario("405, GET") {
-      Given("Valid bearer token")
+    val methodsToTest = Seq("GET", "DELETE", "HEAD", "OPTIONS", "PATCH", "PUT")
 
-      When("a GET authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_get(authBearerToken)
+    methodsToTest.foreach { method =>
+      Scenario(s"405, $method") {
+        Given("Valid bearer token")
 
-      Then("I am returned a status code 403")
-      response isMethodNotAllowed expectedRes405_notAllowed
+        When(s"a $method authorisations request to uknw-auth-checker-api with bearer token")
+        val response = checkerApiService.authorisations405(method, authBearerToken)
+
+        val expectedResponse = MethodNotAllowedApiError.toResult
+
+        Then("I am returned a status code 405")
+        if (method == "HEAD") {
+          response.status shouldBe 405
+        } else {
+          response hasStatusAndBody expectedResponse
+        }
+      }
     }
-
-    Scenario("405, DELETE") {
-      Given("Valid bearer token")
-
-      When("a DELETE authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_delete(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response isMethodNotAllowed expectedRes405_notAllowed
-    }
-
-    Scenario("405, HEAD") {
-      Given("Valid bearer token")
-
-      When("a HEAD authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_head(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response.isMethodNotAllowed
-    }
-
-    Scenario("405, OPTION") {
-      Given("Valid bearer token")
-
-      When("a OPTION authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_option(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response isMethodNotAllowed expectedRes405_notAllowed
-    }
-
-    Scenario("405, PATCH") {
-      Given("Valid bearer token")
-
-      When("a PATCH authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_patch(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response isMethodNotAllowed expectedRes405_notAllowed
-    }
-
-    Scenario("405, PUT") {
-      Given("Valid bearer token")
-      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_put(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response isMethodNotAllowed expectedRes405_notAllowed
-    }
-
   }
 
   Feature("406, NOT_ACCEPTABLE case scenarios") {
@@ -211,39 +227,53 @@ class AuthorisationsSpec extends BaseSpec with TestData {
     Scenario("406 invalid Accept") {
       Given("Valid bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req200_single)
+      val eoris                = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("a POST authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, acceptInput = "invalid")
+      val response =
+        checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken, acceptInput = "invalid")
+
+      val expectedResponse =
+        NotAcceptableApiError.toResult
 
       Then("I am returned a status code 406")
-      response hasStatusAndBody (406, expectedRes406)
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("406 invalid Content-Type") {
       Given("Valid bearer token")
       And("a valid payload")
-      val request = createRequest(localNow, req200_single)
+      val eoris                = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
+      val authorisationRequest = AuthorisationRequest(eoris)
 
       When("a POST authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken, contentType = "invalid")
+      val response =
+        checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken, contentType = "invalid")
+
+      val expectedResponse =
+        NotAcceptableApiError.toResult
 
       Then("I am returned a status code 406")
-      response hasStatusAndBody (406, expectedRes406)
+      response hasStatusAndBody expectedResponse
     }
   }
 
-  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") {
+  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") { // TODO: A different way to generate a 500 from the API/Service?
     Scenario("500, internal server error") {
       Given("Valid bearer token")
-      And("a valid payload")
-      val request = createRequest(localNow, req500_internalError)
+      And("a invalid payload with massive string size of EORIs")
+      val eoris   = useUnrestrictedGarbageGenerator(authorisedEoris.size)
+      val request = createRequest(localNow, eoris)
 
-      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
+      When("a POST authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
+      val expectedResponse =
+        InternalServerApiError.toResult
+
       Then("I am returned a status code 500")
-      response hasStatusAndBody (500, expectedRes500)
+      response hasStatusAndBody expectedResponse
     }
   }
 }

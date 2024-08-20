@@ -27,87 +27,46 @@ import scala.concurrent.duration.DurationInt
 class UknwAuthCheckerApiService extends HttpClient {
 
   private val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
+  private val defaultContentType        = "application/json"
+  private val defaultAcceptInput        = "application/vnd.hmrc.1.0+json"
 
   def authorisations(
     individualPayload: JsValue,
     authToken: String = "",
-    contentType: String = "application/json",
-    acceptInput: String = "application/vnd.hmrc.1.0+json"
+    contentType: String = defaultContentType,
+    acceptInput: String = defaultAcceptInput
   ): StandaloneWSResponse =
-    Await.result(
-      post(
-        authorisationsUrl,
-        Json.stringify(individualPayload),
-        ("Content-Type", contentType),
-        ("Authorization", authToken),
-        ("Accept", acceptInput)
+    awaitRequest(
+      "POST",
+      authorisationsUrl,
+      Seq(
+        "Content-Type"  -> contentType,
+        "Accept"        -> acceptInput,
+        "Authorization" -> authToken
       ),
-      10.seconds
+      individualPayload
     )
 
-  def authorisations405_get(authToken: String): StandaloneWSResponse =
-    Await.result(
-      get(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
+  def authorisations405(
+    method: String,
+    authToken: String,
+    contentType: String = defaultContentType,
+    acceptInput: String = defaultAcceptInput
+  ): StandaloneWSResponse =
+    awaitRequest(
+      method,
+      authorisationsUrl,
+      Seq(
+        "Content-Type"  -> contentType,
+        "Accept"        -> acceptInput,
+        "Authorization" -> authToken
+      )
     )
 
-  def authorisations405_delete(authToken: String): StandaloneWSResponse =
-    Await.result(
-      delete(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
-  def authorisations405_head(authToken: String): StandaloneWSResponse =
-    Await.result(
-      head(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
-  def authorisations405_option(authToken: String): StandaloneWSResponse =
-    Await.result(
-      option(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
-  def authorisations405_patch(authToken: String): StandaloneWSResponse =
-    Await.result(
-      patch(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
-
-  def authorisations405_put(authToken: String): StandaloneWSResponse =
-    Await.result(
-      put(
-        authorisationsUrl,
-        ("Content-Type", "application/json"),
-        ("Authorization", authToken),
-        ("Accept", "application/vnd.hmrc.1.0+json")
-      ),
-      10.seconds
-    )
+  private def awaitRequest(
+    method: String,
+    url: String,
+    headers: Seq[(String, String)] = Seq.empty,
+    body: JsValue = Json.obj()
+  ): StandaloneWSResponse = Await.result(executeRequest(method, url, headers, body), 10.seconds)
 }

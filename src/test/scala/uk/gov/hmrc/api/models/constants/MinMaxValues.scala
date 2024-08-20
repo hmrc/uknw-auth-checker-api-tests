@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources.responses
+package uk.gov.hmrc.api.models.constants
 
-trait Responses200 {
-  val expectedRes200_single: Seq[String] = Seq("GB000000000200")
-
-  val expectedRes200_multiple: Seq[String] = Seq("GB000000000200", "XI000000000200")
-
+object MinMaxValues {
+  val minEori = 1
+  val maxEori = 3000
 }
