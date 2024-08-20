@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.api.models
 
-import play.api.http.Status._
-import play.api.libs.json._
+import play.api.http.Status.*
+import play.api.libs.json.*
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
-import uk.gov.hmrc.api.models.transformers.{BadRequestErrorTransformer, JsErrorTransformer}
+import uk.gov.hmrc.api.models.constants.CustomRegex.invalidFormatOfEorisPattern
 import uk.gov.hmrc.api.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths}
 
 sealed trait ApiErrorResponse {
@@ -103,18 +103,44 @@ final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val message: String = ApiErrorMessages.unauthorized
 }
 
-final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse with BadRequestErrorTransformer {
+final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse {
   val statusCode: Int = BAD_REQUEST
   val code: String    = ApiErrorCodes.badRequest
   val message: String = ApiErrorMessages.invalidRequest
 
-  val getErrors: JsValue = transformBadRequest(errorMessages)
+  val getErrors: JsValue = {
+    val errors = errorMessages
+      .split("Invalid")
+      .filter(_.matches(invalidFormatOfEorisPattern))
+      .flatMap(_.trim.split(":").lastOption.map(_.split(",").map(_.trim)))
+      .flatten
+      .map { eori =>
+        Json.obj(
+          JsonPaths.code    -> ApiErrorCodes.invalidFormat,
+          JsonPaths.message -> ApiErrorMessages.invalidEori(eori),
+          JsonPaths.path    -> JsonPaths.eoris
+        )
+      }
+
+    Json.toJson(errors)
+  }
 }
 
-final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse with JsErrorTransformer {
+final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse {
   val statusCode: Int = BAD_REQUEST
   val code: String    = ApiErrorCodes.badRequest
   val message: String = ApiErrorMessages.badRequest
 
-  val getErrors: JsValue = transformJsErrors(jsErrors)
+  val getErrors: JsValue = JsArray(
+    jsErrors.errors.flatMap { case (jsPath, pathErrors) =>
+      val path = jsPath.toJsonString.stripPrefix("obj.")
+      pathErrors.map { validationError =>
+        Json.obj(
+          "code"    -> ApiErrorCodes.invalidFormat,
+          "message" -> validationError.message,
+          "path"    -> path
+        )
+      }
+    }
+  )
 }

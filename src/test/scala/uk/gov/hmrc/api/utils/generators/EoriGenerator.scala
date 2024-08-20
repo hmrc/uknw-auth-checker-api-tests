@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.utils.generators
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.api.models.constants.CustomRegex
+import uk.gov.hmrc.api.models.constants.{CustomRegex, Eoris}
 import wolfendale.scalacheck.regexp.RegexpGen
 
 trait EoriGenerator extends Eoris with Generators {

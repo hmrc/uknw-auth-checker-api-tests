@@ -17,7 +17,8 @@
 package uk.gov.hmrc.api.utils
 
 import uk.gov.hmrc.api.models
-import uk.gov.hmrc.api.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse, EisAuthorisationRequest, EisAuthorisationResponse, EisAuthorisationsResponse}
+import uk.gov.hmrc.api.models.constants.Eoris
+import uk.gov.hmrc.api.models.{AuthorisationRequest, AuthorisationResponse, AuthorisationsResponse}
 
 import java.time.{LocalDate, ZonedDateTime}
 

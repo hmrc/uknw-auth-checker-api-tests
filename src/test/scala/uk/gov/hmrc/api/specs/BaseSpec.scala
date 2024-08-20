@@ -21,10 +21,8 @@ import org.apache.pekko.stream.{Materializer, SystemMaterializer}
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{Assertion, GivenWhenThen}
-import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.StandaloneWSResponse
 import play.api.mvc.Result
-import uk.gov.hmrc.api.models.AuthorisationsResponse
 import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
@@ -43,21 +41,11 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
 
-    def hasStatusAndBody(response: (Int, AuthorisationsResponse)): Assertion = {
-      wsResponse.status        shouldBe response._1
-      wsResponse.body.toString shouldBe Json.toJson(response._2).toString
-    }
-
-    def hasStatusAndBodyResult(result: Result): Assertion = {
+    def hasStatusAndBody(result: Result): Assertion = {
       val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
 
       wsResponse.status        shouldBe result.header.status
       wsResponse.body.toString shouldBe body
     }
-
-    // This is for the HEAD request which doesn't receive a body
-    def isMethodNotAllowed: Assertion =
-      wsResponse.status shouldBe 405
-
   }
 }

@@ -17,11 +17,15 @@
 package uk.gov.hmrc.api.models
 
 import play.api.libs.json.{Json, OFormat, Writes}
+import play.api.mvc.Result
+import play.api.mvc.Results.Status
 import uk.gov.hmrc.api.utils.resources.Iso8601DateTimeWrites
 
 import java.time.ZonedDateTime
 
-case class AuthorisationsResponse(date: ZonedDateTime, eoris: Seq[AuthorisationResponse])
+case class AuthorisationsResponse(date: ZonedDateTime, eoris: Seq[AuthorisationResponse]) {
+  def toResult(expectedStatus: Int): Result = Status(expectedStatus)(Json.toJson(this))
+}
 
 object AuthorisationsResponse {
 

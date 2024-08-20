@@ -22,7 +22,8 @@ import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.constants.{ApiErrorMessages, MinMaxValues}
 import uk.gov.hmrc.api.service.AuthService
-import uk.gov.hmrc.api.utils.{EoriGenerator, TestData}
+import uk.gov.hmrc.api.utils.TestData
+import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   private val myAuthService           = new AuthService
@@ -49,12 +50,12 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val expectedResponse = AuthorisationsResponse(
         zonedNow,
         authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
-      )
+      ).toResult(expectedStatus = OK)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody (OK, expectedResponse)
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("Happy path with multiple EORIs - 200 OK") {
@@ -71,9 +72,10 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val expectedResponse = AuthorisationsResponse(
         zonedNow,
         authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
-      )
+      ).toResult(expectedStatus = OK)
+
       Then("I am returned a status code 200")
-      response hasStatusAndBody (OK, expectedResponse)
+      response hasStatusAndBody expectedResponse
     }
   }
 
@@ -95,7 +97,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val expectedResponse = JsonValidationApiError(jsError).toResult
 
       Then("I am returned a status code 400")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("400 Bad Eoris") {
@@ -123,7 +125,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         JsonValidationApiError(jsError).toResult
 
       Then("I am returned a status code 400")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("400 Not enough EORIS (0)") {
@@ -141,7 +143,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         JsonValidationApiError(jsError).toResult
 
       Then("I am returned a status code 400")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("400 Too many EORIS (3001)") {
@@ -161,7 +163,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         JsonValidationApiError(jsError).toResult
 
       Then("I am returned a status code 400")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
   }
 
@@ -182,7 +184,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         UnauthorizedApiError(ApiErrorMessages.unauthorized).toResult
 
       Then("I am returned a status code 401")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
 
     }
 
@@ -200,82 +202,32 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         UnauthorizedApiError(ApiErrorMessages.unauthorized).toResult
 
       Then("I am returned a status code 401")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
 
   }
 
   Feature("405, METHOD_NOT_ALLOWED case scenarios") {
 
-    Scenario("405, GET") {
-      Given("Valid bearer token")
+    val methodsToTest = Seq("GET", "DELETE", "HEAD", "OPTIONS", "PATCH", "PUT")
 
-      When("a GET authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_get(authBearerToken)
+    methodsToTest.foreach { method =>
+      Scenario(s"405, $method") {
+        Given("Valid bearer token")
 
-      val expectedResponse = MethodNotAllowedApiError.toResult
+        When(s"a $method authorisations request to uknw-auth-checker-api with bearer token")
+        val response = checkerApiService.authorisations405(method, authBearerToken)
 
-      Then("I am returned a status code 405")
-      response hasStatusAndBodyResult expectedResponse
+        val expectedResponse = MethodNotAllowedApiError.toResult
+
+        Then("I am returned a status code 405")
+        if (method == "HEAD") {
+          response.status shouldBe 405
+        } else {
+          response hasStatusAndBody expectedResponse
+        }
+      }
     }
-
-    Scenario("405, DELETE") {
-      Given("Valid bearer token")
-
-      When("a DELETE authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_delete(authBearerToken)
-
-      val expectedResponse = MethodNotAllowedApiError.toResult
-
-      Then("I am returned a status code 405")
-      response hasStatusAndBodyResult expectedResponse
-    }
-
-    Scenario("405, HEAD") {
-      Given("Valid bearer token")
-
-      When("a HEAD authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_head(authBearerToken)
-
-      Then("I am returned a status code 405")
-      response.isMethodNotAllowed
-    }
-
-    Scenario("405, OPTION") {
-      Given("Valid bearer token")
-
-      When("a OPTION authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_option(authBearerToken)
-
-      val expectedResponse = MethodNotAllowedApiError.toResult
-
-      Then("I am returned a status code 405")
-      response hasStatusAndBodyResult expectedResponse
-    }
-
-    Scenario("405, PATCH") {
-      Given("Valid bearer token")
-
-      When("a PATCH authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_patch(authBearerToken)
-
-      val expectedResponse = MethodNotAllowedApiError.toResult
-
-      Then("I am returned a status code 405")
-      response hasStatusAndBodyResult expectedResponse
-    }
-
-    Scenario("405, PUT") {
-      Given("Valid bearer token")
-      When("a PUT authorisations request to uknw-auth-checker-api with bearer token")
-      val response = checkerApiService.authorisations405_put(authBearerToken)
-
-      val expectedResponse = MethodNotAllowedApiError.toResult
-
-      Then("I am returned a status code 405")
-      response hasStatusAndBodyResult expectedResponse
-    }
-
   }
 
   Feature("406, NOT_ACCEPTABLE case scenarios") {
@@ -294,7 +246,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         NotAcceptableApiError.toResult
 
       Then("I am returned a status code 406")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
 
     Scenario("406 invalid Content-Type") {
@@ -311,24 +263,25 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         NotAcceptableApiError.toResult
 
       Then("I am returned a status code 406")
-      response hasStatusAndBodyResult expectedResponse
+      response hasStatusAndBody expectedResponse
     }
   }
 
-//  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") { // TODO: How do we trigger an internal server error in the stub/EIS?
-//    Scenario("500, internal server error") {
-//      Given("Valid bearer token")
-//      And("a valid payload")
-//      val eoris   = useEoriGenerator(fetchRandomNumber(2, authorisedEoris.size))
-//      val request = createRequest(localNow, eoris)
-//
-//      When("a POST authorisations request to uknw-auth-checker-api with bearer token")
-//      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
-//
-//      val expectedResponse = EisErrorsResponse(StatusAndMessage.InternalServerError, None)
-//
-//      Then("I am returned a status code 500")
-//      response hasStatusAndBody expectedResponse
-//    }
-//  }
+  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") { // TODO: A different way to generate a 500 from the API/Service?
+    Scenario("500, internal server error") {
+      Given("Valid bearer token")
+      And("a invalid payload with massive string size of EORIs")
+      val eoris   = useUnrestrictedGarbageGenerator(authorisedEoris.size)
+      val request = createRequest(localNow, eoris)
+
+      When("a POST authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
+
+      val expectedResponse =
+        InternalServerApiError.toResult
+
+      Then("I am returned a status code 500")
+      response hasStatusAndBody expectedResponse
+    }
+  }
 }

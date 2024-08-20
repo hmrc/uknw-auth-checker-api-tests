@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.utils.generators
 
 import org.scalacheck.Gen
 
 trait Generators {
   private val maxStringSize = 24
 
-  private val specificSizeAlphaNumStrGen: Gen[String] = for {
+  private def specificSizeAlphaNumStrGen(maxStringSize: Int): Gen[String] = for {
     length <- Gen.choose(1, maxStringSize)
     str    <- Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString)
   } yield str
 
   protected def fetchRandomNumber(min: Int, max: Int): Int = Gen.choose(min, max).sample.get
 
-  protected def garbageGenerator(i: Int): Gen[Seq[String]] = Gen.listOfN(i, specificSizeAlphaNumStrGen)
+  protected def garbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]] = Gen.listOfN(i, specificSizeAlphaNumStrGen(maxSizeOfStrings))
+  protected def unrestrictedGarbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]] = Gen.listOfN(i, Gen.alphaNumStr)
 
-  protected def useGarbageGenerator(amountOfValues: Int): Seq[String] = garbageGenerator(amountOfValues).sample.get
+  protected def useGarbageGenerator(amountOfValues: Int, maxSizeOfStrings: Int = maxStringSize): Seq[String] = garbageGenerator(amountOfValues, maxSizeOfStrings).sample.get
+  protected def useUnrestrictedGarbageGenerator(amountOfValues: Int, maxSizeOfStrings: Int = maxStringSize): Seq[String] = unrestrictedGarbageGenerator(amountOfValues, maxSizeOfStrings).sample.get
 }
