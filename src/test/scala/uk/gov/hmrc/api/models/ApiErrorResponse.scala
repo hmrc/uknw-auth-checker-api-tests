@@ -20,45 +20,35 @@ import play.api.http.Status.*
 import play.api.libs.json.*
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
-import uk.gov.hmrc.api.models.constants.CustomRegex.invalidFormatOfEorisPattern
-import uk.gov.hmrc.api.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths}
+import uk.gov.hmrc.api.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths, MinMaxValues}
 
 sealed trait ApiErrorResponse {
   def statusCode: Int
   def code: String
   def message: String
 
-  private def convertErrorsToReadableFormat: JsValue =
-    this match {
-      case badRequestError: BadRequestApiError     =>
-        Json.toJson(badRequestError)(ApiErrorResponse.badRequestApiErrorWrites)
-      case validationError: JsonValidationApiError =>
-        Json.toJson(validationError)(ApiErrorResponse.jsonValidationApiErrorWrites)
-      case _                                       => Json.toJson(this)
-    }
-
-  def toResult: Result = Status(statusCode)(Json.toJson(convertErrorsToReadableFormat))
+  def toResult: Result = Status(statusCode)(Json.toJson(this))
 }
 
 object ApiErrorResponse {
-  implicit val jsonValidationApiErrorWrites: Writes[JsonValidationApiError] = Writes { model =>
-    Json.obj(
-      JsonPaths.code    -> model.code,
-      JsonPaths.message -> model.message,
-      JsonPaths.errors  -> model.getErrors
-    )
-  }
-
   implicit val badRequestApiErrorWrites: Writes[BadRequestApiError] = Writes { model =>
     Json.obj(
       JsonPaths.code    -> model.code,
       JsonPaths.message -> model.message,
-      JsonPaths.errors  -> model.getErrors
+      JsonPaths.errors  -> model.errors
     )
   }
 
-  implicit val writes: Writes[ApiErrorResponse] = (o: ApiErrorResponse) =>
-    JsObject(Seq(JsonPaths.code -> JsString(o.code), JsonPaths.message -> JsString(o.message)))
+  implicit val writes: Writes[ApiErrorResponse] = {
+    case badRequest: BadRequestApiError => Json.toJson(badRequest)(badRequestApiErrorWrites)
+    case o                              =>
+      JsObject(
+        Seq(
+          JsonPaths.code    -> JsString(o.code),
+          JsonPaths.message -> JsString(o.message)
+        )
+      )
+  }
 }
 
 case object ForbiddenApiError extends ApiErrorResponse {
@@ -103,44 +93,40 @@ final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
   val message: String = ApiErrorMessages.unauthorized
 }
 
-final case class BadRequestApiError(errorMessages: String) extends ApiErrorResponse {
-  val statusCode: Int = BAD_REQUEST
-  val code: String    = ApiErrorCodes.badRequest
-  val message: String = ApiErrorMessages.invalidRequest
-
-  val getErrors: JsValue = {
-    val errors = errorMessages
-      .split("Invalid")
-      .filter(_.matches(invalidFormatOfEorisPattern))
-      .flatMap(_.trim.split(":").lastOption.map(_.split(",").map(_.trim)))
-      .flatten
-      .map { eori =>
-        Json.obj(
-          JsonPaths.code    -> ApiErrorCodes.invalidFormat,
-          JsonPaths.message -> ApiErrorMessages.invalidEori(eori),
-          JsonPaths.path    -> JsonPaths.eoris
-        )
-      }
-
-    Json.toJson(errors)
-  }
-}
-
-final case class JsonValidationApiError(jsErrors: JsError) extends ApiErrorResponse {
+final case class BadRequestApiError(errors: Seq[ApiErrorDetails]) extends ApiErrorResponse {
   val statusCode: Int = BAD_REQUEST
   val code: String    = ApiErrorCodes.badRequest
   val message: String = ApiErrorMessages.badRequest
+}
 
-  val getErrors: JsValue = JsArray(
-    jsErrors.errors.flatMap { case (jsPath, pathErrors) =>
-      val path = jsPath.toJsonString.stripPrefix("obj.")
-      pathErrors.map { validationError =>
-        Json.obj(
-          "code"    -> ApiErrorCodes.invalidFormat,
-          "message" -> validationError.message,
-          "path"    -> path
-        )
-      }
-    }
-  )
+sealed trait ApiErrorDetails {
+  def statusCode: Int
+  def code: String
+  def message: String
+  def path: String
+}
+
+object ApiErrorDetails {
+  implicit val writes: Writes[ApiErrorDetails] = (o: ApiErrorDetails) =>
+    JsObject(
+      Seq(
+        JsonPaths.code    -> JsString(o.code),
+        JsonPaths.message -> JsString(o.message),
+        JsonPaths.path    -> JsString(o.path)
+      )
+    )
+}
+
+case object InvalidEoriCountApiError extends ApiErrorDetails {
+  val statusCode: Int = BAD_REQUEST
+  val code: String    = ApiErrorCodes.invalidFormat
+  val message: String = ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori)
+  val path: String    = JsonPaths.eoris
+}
+
+final case class invalidEoriApiError(eori: String) extends ApiErrorDetails {
+  val statusCode: Int = BAD_REQUEST
+  val code: String    = ApiErrorCodes.invalidFormat
+  val message: String = ApiErrorMessages.invalidEori(eori)
+  val path: String    = JsonPaths.eoris
 }

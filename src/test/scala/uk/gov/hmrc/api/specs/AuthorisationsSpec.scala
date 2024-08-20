@@ -18,9 +18,9 @@ package uk.gov.hmrc.api.specs
 
 import play.api.http.Status
 import play.api.http.Status.OK
-import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError}
+import play.api.libs.json.Json
 import uk.gov.hmrc.api.models.*
-import uk.gov.hmrc.api.models.constants.{ApiErrorMessages, MinMaxValues}
+import uk.gov.hmrc.api.models.constants.ApiErrorMessages
 import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
@@ -92,9 +92,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val jsError = JsError(JsPath \ "eoris", JsonValidationError(ApiErrorMessages.invalidEori(eoris.head)))
+      val errors = Seq(invalidEoriApiError(eoris.head))
 
-      val expectedResponse = JsonValidationApiError(jsError).toResult
+      val expectedResponse = BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
       response hasStatusAndBody expectedResponse
@@ -113,16 +113,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = eoris.map(eori => JsonValidationError(ApiErrorMessages.invalidEori(eori)))
+      val errors = eoris.map(eori => invalidEoriApiError(eori))
 
-      val jsError = JsError(
-        Seq(
-          JsPath \ "eoris" -> errors
-        )
-      )
-
-      val expectedResponse =
-        JsonValidationApiError(jsError).toResult
+      val expectedResponse = BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
       response hasStatusAndBody expectedResponse
@@ -134,16 +127,16 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val authorisationRequest = AuthorisationRequest(Seq.empty)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
-      val jsError =
-        JsError(JsPath \ "eoris", JsonValidationError(ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori)))
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
+      val errors = Seq(InvalidEoriCountApiError)
+
       val expectedResponse =
-        JsonValidationApiError(jsError).toResult
+        BadRequestApiError(errors)
 
       Then("I am returned a status code 400")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBody expectedResponse.toResult
     }
 
     Scenario("400 Too many EORIS (3001)") {
@@ -154,13 +147,12 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
 
-      val jsError =
-        JsError(JsPath \ "eoris", JsonValidationError(ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori)))
+      val errors = Seq(InvalidEoriCountApiError)
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
       val expectedResponse =
-        JsonValidationApiError(jsError).toResult
+        BadRequestApiError(errors).toResult
 
       Then("I am returned a status code 400")
       response hasStatusAndBody expectedResponse
