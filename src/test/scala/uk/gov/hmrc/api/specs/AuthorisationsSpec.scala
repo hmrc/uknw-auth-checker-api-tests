@@ -50,7 +50,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val expectedResponse = AuthorisationsResponse(
         zonedNow,
         authorisationRequest.eoris.map(r => AuthorisationResponse(r, authorised = true))
-      ).toResult(expectedStatus = OK)
+      ).toResult(expectedStatus = 200)
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)

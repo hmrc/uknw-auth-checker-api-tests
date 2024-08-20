@@ -2,7 +2,6 @@ import sbt.*
 
 object Dependencies {
   private val bootstrapVersion = "9.3.0"
-  val PekkoVersion             = "1.1.0-M1"
   val test: Seq[ModuleID]      = Seq(
     "org.commonmark"        % "commonmark"              % "0.22.0"         % Test,
     "com.typesafe"          % "config"                  % "1.4.3"          % Test,
