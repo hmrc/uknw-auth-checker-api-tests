@@ -99,6 +99,12 @@ final case class BadRequestApiError(errors: Seq[ApiErrorDetails]) extends ApiErr
   val message: String = ApiErrorMessages.badRequest
 }
 
+case object RequestEntityTooLargeError extends ApiErrorResponse {
+  val statusCode: Int = REQUEST_ENTITY_TOO_LARGE
+  val code: String    = ApiErrorCodes.requestEntityTooLarge
+  val message: String = ApiErrorMessages.requestEntityTooLarge
+}
+
 sealed trait ApiErrorDetails {
   def statusCode: Int
   def code: String
