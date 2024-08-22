@@ -15,6 +15,14 @@
       "ruleId": 10023,
       "urlIsRegex": "true",
       "newLevel": -1
+    },
+    {
+      "reason": "PII Disclosure",
+      "contextId": 1,
+      "url": "http://localhost:9070/authorisations",
+      "ruleId": 10062,
+      "urlIsRegex": "true",
+      "newLevel": -1
     }
   ]
 }
