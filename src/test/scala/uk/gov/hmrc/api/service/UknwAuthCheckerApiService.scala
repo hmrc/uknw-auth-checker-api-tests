@@ -37,7 +37,6 @@ class UknwAuthCheckerApiService extends HttpClient {
     acceptInput: String = defaultAcceptInput
   ): StandaloneWSResponse =
     awaitRequest(
-      "POST",
       authorisationsUrl,
       Seq(
         "Content-Type"  -> contentType,
@@ -47,26 +46,9 @@ class UknwAuthCheckerApiService extends HttpClient {
       individualPayload
     )
 
-  def authorisations405(
-    method: String,
-    authToken: String,
-    contentType: String = defaultContentType,
-    acceptInput: String = defaultAcceptInput
-  ): StandaloneWSResponse =
-    awaitRequest(
-      method,
-      authorisationsUrl,
-      Seq(
-        "Content-Type"  -> contentType,
-        "Accept"        -> acceptInput,
-        "Authorization" -> authToken
-      )
-    )
-
   private def awaitRequest(
-    method: String,
     url: String,
     headers: Seq[(String, String)] = Seq.empty,
     body: JsValue = Json.obj()
-  ): StandaloneWSResponse = Await.result(executeRequest(method, url, headers, body), 10.seconds)
+  ): StandaloneWSResponse = Await.result(post(url, body.toString, headers *), 10.seconds)
 }

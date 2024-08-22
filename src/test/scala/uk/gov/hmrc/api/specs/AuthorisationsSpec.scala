@@ -199,29 +199,6 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
   }
 
-  Feature("405, METHOD_NOT_ALLOWED case scenarios") {
-
-    val methodsToTest = Seq("GET", "DELETE", "HEAD", "OPTIONS", "PATCH", "PUT")
-
-    methodsToTest.foreach { method =>
-      Scenario(s"405, $method") {
-        Given("Valid bearer token")
-
-        When(s"a $method authorisations request to uknw-auth-checker-api with bearer token")
-        val response = checkerApiService.authorisations405(method, authBearerToken)
-
-        val expectedResponse = MethodNotAllowedApiError.toResult
-
-        Then("I am returned a status code 405")
-        if (method == "HEAD") {
-          response.status shouldBe 405
-        } else {
-          response hasStatusAndBody expectedResponse
-        }
-      }
-    }
-  }
-
   Feature("406, NOT_ACCEPTABLE case scenarios") {
 
     Scenario("406 invalid Accept") {

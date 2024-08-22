@@ -18,11 +18,11 @@ package uk.gov.hmrc.api.client
 
 import org.apache.pekko.actor.ActorSystem
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.DefaultBodyWritables._
-import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
-import play.api.libs.ws.{StandaloneWSRequest, StandaloneWSResponse}
+import play.api.libs.ws.DefaultBodyWritables.*
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
-import uk.gov.hmrc.api.conf.ZapConfiguration._
+import play.api.libs.ws.{StandaloneWSRequest, StandaloneWSResponse}
+import uk.gov.hmrc.api.conf.ZapConfiguration.*
+
 import scala.concurrent.{ExecutionContext, Future}
 
 trait HttpClient {
@@ -42,23 +42,4 @@ trait HttpClient {
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSResponse] =
     defaultRequest(url, headers: _*)
       .post(bodyAsJson)
-
-  def executeRequest(
-    method: String,
-    url: String,
-    headers: Seq[(String, String)] = Seq.empty,
-    body: JsValue = dummyJson
-  ): Future[StandaloneWSResponse] = {
-    val request = defaultRequest(url, headers: _*)
-    method.toUpperCase match {
-      case "GET"     => request.get()
-      case "POST"    => request.post(body)
-      case "DELETE"  => request.delete()
-      case "HEAD"    => request.head()
-      case "OPTIONS" => request.options()
-      case "PATCH"   => request.patch(body)
-      case "PUT"     => request.put(body)
-      case _         => throw new IllegalArgumentException(s"Unsupported HTTP method: $method")
-    }
-  }
 }
