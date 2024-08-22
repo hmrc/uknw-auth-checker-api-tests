@@ -298,7 +298,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     }
   }
 
-  Feature("413, REQUEST_ENTITY_TOO_LARGE case Scenarios") { // TODO: A different way to generate a 500 from the API/Service?
+  Feature("413, REQUEST_ENTITY_TOO_LARGE case Scenarios") {
     Scenario("413, request entity too large error") {
       Given("Valid bearer token")
       And("a invalid payload with massive string size of EORIs")
