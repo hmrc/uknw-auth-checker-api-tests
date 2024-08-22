@@ -43,7 +43,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     Scenario("Happy path with single EORI - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
-      val eoris = useEoriGenerator(1, Some(1))
+      val eoris = useEoriGenerator(1)
 
       val authorisationRequest = AuthorisationRequest(eoris)
 
@@ -75,6 +75,68 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       ).toResult(expectedStatus = OK)
 
       Then("I am returned a status code 200")
+      response hasStatusAndBody expectedResponse
+    }
+  }
+
+  Feature("200 case duplicate scenarios") {
+
+    Scenario("Happy path with two authorised duplicate EORIs - 200 OK") {
+      Given("a bearer token")
+      And("a valid payload")
+      val eori  = useEoriGenerator(1).head
+      val eoris = Seq(eori, eori)
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      val expectedResponse = AuthorisationsResponse(
+        zonedNow,
+        authorisationRequest.eoris.distinct.map(r => AuthorisationResponse(r, authorised = true))
+      ).toResult(expectedStatus = 200)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+      Then("I am returned a status code 200 and the correct response")
+      response hasStatusAndBody expectedResponse
+    }
+
+    Scenario("Happy path with two unauthorised duplicate EORIs - 200 OK") {
+      Given("a bearer token")
+      And("a valid payload")
+      val eori  = useEoriGenerator(1, Some(0)).head
+      val eoris = Seq(eori, eori)
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      val expectedResponse = AuthorisationsResponse(
+        zonedNow,
+        authorisationRequest.eoris.distinct.map(r => AuthorisationResponse(r, authorised = authorisedEoris.contains(r)))
+      ).toResult(expectedStatus = 200)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+      Then("I am returned a status code 200 and the correct response")
+      response hasStatusAndBody expectedResponse
+    }
+
+    Scenario("Happy path with two unauthorised duplicate EORIs and two authorised duplicate EORIs - 200 OK") {
+      Given("a bearer token")
+      And("a valid payload")
+      val unauthorisedEori = useEoriGenerator(1, Some(0)).head
+      val authorisedEori   = useEoriGenerator(1).head
+
+      val eoris = Seq(unauthorisedEori, unauthorisedEori, authorisedEori, authorisedEori)
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      val expectedResponse = AuthorisationsResponse(
+        zonedNow,
+        authorisationRequest.eoris.distinct.map(r => AuthorisationResponse(r, authorised = authorisedEoris.contains(r)))
+      ).toResult(expectedStatus = 200)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+      Then("I am returned a status code 200 and the correct response")
       response hasStatusAndBody expectedResponse
     }
   }
