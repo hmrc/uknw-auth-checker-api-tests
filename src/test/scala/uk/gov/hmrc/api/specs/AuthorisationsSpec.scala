@@ -298,8 +298,8 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     }
   }
 
-  Feature("500, INTERNAL_SERVER_ERROR case Scenarios") { // TODO: A different way to generate a 500 from the API/Service?
-    Scenario("500, internal server error") {
+  Feature("413, REQUEST_ENTITY_TOO_LARGE case Scenarios") {
+    Scenario("413, request entity too large error") {
       Given("Valid bearer token")
       And("a invalid payload with massive string size of EORIs")
       val eoris   = useUnrestrictedGarbageGenerator(authorisedEoris.size)
@@ -309,7 +309,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val response = checkerApiService.authorisations(Json.toJson(request), authBearerToken)
 
       val expectedResponse =
-        InternalServerApiError.toResult
+        RequestEntityTooLargeError.toResult
 
       Then("I am returned a status code 500")
       response hasStatusAndBody expectedResponse
