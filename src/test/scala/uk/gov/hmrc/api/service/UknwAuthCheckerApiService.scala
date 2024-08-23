@@ -46,22 +46,6 @@ class UknwAuthCheckerApiService extends HttpClient {
       individualPayload
     )
 
-  def authorisationsdawd(
-    individualPayload: JsValue,
-    authToken: String = "",
-    contentType: String = "dwadwadawd",
-    acceptInput: String = "gdgrdgdrgd"
-  ): StandaloneWSResponse =
-    awaitRequest(
-      authorisationsUrl,
-      Seq(
-        "Content-Type"  -> contentType,
-        "Accept"        -> acceptInput,
-        "Authorization" -> authToken
-      ),
-      individualPayload
-    )
-
   private def awaitRequest(
     url: String,
     headers: Seq[(String, String)] = Seq.empty,
