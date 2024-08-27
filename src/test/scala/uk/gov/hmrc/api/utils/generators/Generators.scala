@@ -34,9 +34,10 @@ trait Generators {
     Gen.listOfN(i, Gen.alphaNumStr)
 
   protected def useGarbageGenerator(amountOfValues: Int, maxSizeOfStrings: Int = maxStringSize): Seq[String] =
-    garbageGenerator(amountOfValues, maxSizeOfStrings).sample.get
+    garbageGenerator(amountOfValues, maxSizeOfStrings).sample.get.distinct
+
   protected def useUnrestrictedGarbageGenerator(
     amountOfValues: Int,
     maxSizeOfStrings: Int = maxStringSize
-  ): Seq[String] = unrestrictedGarbageGenerator(amountOfValues, maxSizeOfStrings).sample.get
+  ): Seq[String] = unrestrictedGarbageGenerator(amountOfValues, maxSizeOfStrings).sample.get.distinct
 }
