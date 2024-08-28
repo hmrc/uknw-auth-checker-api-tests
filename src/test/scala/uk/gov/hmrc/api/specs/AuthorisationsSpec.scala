@@ -21,13 +21,11 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages
-import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
-  private val myAuthService           = new AuthService
-  private val authBearerToken: String = myAuthService.getAuthBearerToken
+  private val authBearerToken: String = authService.getAuthBearerToken
 
   Feature("Example of creating bearer token") {
     Scenario("Checking bearer token") {
@@ -272,9 +270,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       Given("a bearer token")
       And("an invalid payload")
 
-      val eoris = useGarbageGenerator(
-        authorisedEoris.size
-      )
+      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val authorisedEoris        = useEoriGenerator(fetchRandomNumber(1, 10))
+      val eoris = invalidEoris ++ authorisedEoris
 
       val authorisationRequest = AuthorisationRequest(eoris)
 
@@ -282,7 +280,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = eoris.map(eori => invalidEoriApiError(eori))
+      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -290,6 +288,54 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       response hasStatusAndBody expectedResponse
     }
+
+    Scenario("Multiple Invalid Formatted EORIs with some valid unauthorised EORIs - 400 Bad Request") {
+      Given("a bearer token")
+      And("an invalid payload")
+
+      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
+      val eoris = invalidEoris ++ unauthorisedEoris
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
+
+      val expectedResponse = BadRequestApiError(errors).toResult
+
+      Then("I am returned a status code 400")
+
+      response hasStatusAndBody expectedResponse
+    }
+
+    Scenario("Multiple Invalid Formatted EORIs with some valid authorised and valid unauthorised EORIs - 400 Bad Request") {
+      Given("a bearer token")
+      And("an invalid payload")
+
+      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
+      val authorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10))
+      val eoris = invalidEoris ++ unauthorisedEoris ++ authorisedEoris
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
+
+      val expectedResponse = BadRequestApiError(errors).toResult
+
+      Then("I am returned a status code 400")
+
+      response hasStatusAndBody expectedResponse
+    }
+
 
     Scenario("Duplicate Invalid Formatted EORI - 400 Bad Request") {
       Given("a bearer token")
