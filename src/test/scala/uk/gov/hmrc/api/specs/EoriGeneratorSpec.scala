@@ -162,6 +162,6 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
 
     strings.nonEmpty             shouldBe true
     strings.size <= randomNumber shouldBe true
+    strings.distinct.size        shouldBe strings.size
   }
-
 }
