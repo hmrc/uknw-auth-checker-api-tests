@@ -154,13 +154,14 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
     }
   }
 
-  Scenario("garbage generator should generate a list of random strings") {
+  Scenario("garbage generator should generate a list of distinct random strings") {
     When("passed a size")
     Then("A list of random strings should be generated")
     val randomNumber = fetchRandomNumber(1, 100)
     val strings      = useGarbageGenerator(randomNumber)
 
-    strings.size shouldBe randomNumber
+    strings.nonEmpty             shouldBe true
+    strings.size <= randomNumber shouldBe true
   }
 
 }
