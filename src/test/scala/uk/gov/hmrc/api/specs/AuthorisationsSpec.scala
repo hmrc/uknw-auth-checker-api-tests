@@ -270,9 +270,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       Given("a bearer token")
       And("an invalid payload")
 
-      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
-      val authorisedEoris        = useEoriGenerator(fetchRandomNumber(1, 10))
-      val eoris = invalidEoris ++ authorisedEoris
+      val invalidEoris    = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val authorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10))
+      val eoris           = invalidEoris ++ authorisedEoris
 
       val authorisationRequest = AuthorisationRequest(eoris)
 
@@ -293,9 +293,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       Given("a bearer token")
       And("an invalid payload")
 
-      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val invalidEoris      = useGarbageGenerator(fetchRandomNumber(1, 10))
       val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
-      val eoris = invalidEoris ++ unauthorisedEoris
+      val eoris             = invalidEoris ++ unauthorisedEoris
 
       val authorisationRequest = AuthorisationRequest(eoris)
 
@@ -312,14 +312,16 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse
     }
 
-    Scenario("Multiple Invalid Formatted EORIs with some valid authorised and valid unauthorised EORIs - 400 Bad Request") {
+    Scenario(
+      "Multiple Invalid Formatted EORIs with some valid authorised and valid unauthorised EORIs - 400 Bad Request"
+    ) {
       Given("a bearer token")
       And("an invalid payload")
 
-      val invalidEoris = useGarbageGenerator(fetchRandomNumber(1, 10))
+      val invalidEoris      = useGarbageGenerator(fetchRandomNumber(1, 10))
       val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
-      val authorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10))
-      val eoris = invalidEoris ++ unauthorisedEoris ++ authorisedEoris
+      val authorisedEoris   = useEoriGenerator(fetchRandomNumber(1, 10))
+      val eoris             = invalidEoris ++ unauthorisedEoris ++ authorisedEoris
 
       val authorisationRequest = AuthorisationRequest(eoris)
 
@@ -335,7 +337,6 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       response hasStatusAndBody expectedResponse
     }
-
 
     Scenario("Duplicate Invalid Formatted EORI - 400 Bad Request") {
       Given("a bearer token")
