@@ -160,7 +160,7 @@ class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
     val randomNumber = fetchRandomNumber(1, 100)
     val strings      = useGarbageGenerator(randomNumber)
 
-    strings.nonEmpty shouldBe true
+    strings.nonEmpty             shouldBe true
     strings.size <= randomNumber shouldBe true
   }
 
