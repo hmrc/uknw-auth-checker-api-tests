@@ -38,7 +38,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     }
   }
 
-  Feature("200 case Scenarios") {
+  Feature("200, case scenarios") {
 
     Scenario("Happy path with single authorised EORI - 200 OK") {
       Given("a bearer token")
@@ -153,7 +153,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     }
   }
 
-  Feature("200 case duplicate scenarios") {
+  Feature("200, case duplicate scenarios") {
     Scenario("Happy path with two authorised duplicate EORIs - 200 OK") {
       Given("a bearer token")
       And("a valid payload")
@@ -225,7 +225,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
   Feature("400, BAD_REQUEST case scenarios") {
 
-    Scenario("400 Singular Invalid Formated Eori") {
+    Scenario("Singular Invalid Formatted EORI - 400 Bad Request") {
       Given("a bearer token")
       And("an invalid payload")
 
@@ -245,7 +245,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse
     }
 
-    Scenario("400 Multiple Invalid Formated Eoris") {
+    Scenario("Multiple Invalid Formatted EORIs - 400 Bad Request") {
       Given("a bearer token")
       And("an invalid payload")
 
@@ -268,7 +268,30 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse
     }
 
-    Scenario("400 Duplicate Invalid Formated Eori") {
+    Scenario("Multiple Invalid Formatted EORIs with some valid authorised EORIs - 400 Bad Request") {
+      Given("a bearer token")
+      And("an invalid payload")
+
+      val eoris = useGarbageGenerator(
+        authorisedEoris.size
+      )
+
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val errors = eoris.map(eori => invalidEoriApiError(eori))
+
+      val expectedResponse = BadRequestApiError(errors).toResult
+
+      Then("I am returned a status code 400")
+
+      response hasStatusAndBody expectedResponse
+    }
+
+    Scenario("Duplicate Invalid Formatted EORI - 400 Bad Request") {
       Given("a bearer token")
       And("an invalid payload")
 
@@ -289,7 +312,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse
     }
 
-    Scenario("400 Not enough EORIS (0)") {
+    Scenario("Not enough EORIS (0) - 400 Bad Request") {
       Given("a bearer token")
       And("an invalid payload")
 
@@ -309,7 +332,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse.toResult
     }
 
-    Scenario("400 Too many EORIS (3001)") {
+    Scenario("Too many EORIS (3001) - 400 Bad Request") {
       Given("a bearer token")
       And("an invalid payload")
 
@@ -332,7 +355,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   }
 
   Feature("401, UNAUTHORIZED case scenarios") {
-    Scenario("Invalid Bearer Token") {
+    Scenario("Invalid Bearer Token - 401 Unauthorized") {
       Given("an invalid bearer token")
 
       val eoris                  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
@@ -353,7 +376,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
     }
 
-    Scenario("Missing Bearer Token") {
+    Scenario("Missing Bearer Token - 401 Unauthorized") {
       Given("There's no bearer token")
       And("a valid payload")
 
@@ -374,7 +397,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   }
 
   Feature("406, NOT_ACCEPTABLE case scenarios") {
-    Scenario("406 invalid Accept") {
+    Scenario("Invalid Accept - 406 Not Acceptable") {
       Given("Valid bearer token")
       And("a valid payload")
 
@@ -394,7 +417,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       response hasStatusAndBody expectedResponse
     }
 
-    Scenario("406 invalid Content-Type") {
+    Scenario("Invalid Content-Type - 406 Not Acceptable") {
       Given("Valid bearer token")
       And("a valid payload")
 
@@ -416,9 +439,9 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
   }
 
   Feature("413, REQUEST_ENTITY_TOO_LARGE case Scenarios") {
-    Scenario("413, request entity too large error") {
+    Scenario("Request entity too large - 413 Request Entity Too Large") {
       Given("Valid bearer token")
-      And("a invalid payload with massive string size of EORIs")
+      And("an invalid payload with a massive string size of EORIs causing the request to be over 100KB")
 
       val eoris   = useUnrestrictedGarbageGenerator(authorisedEoris.size)
       val request = createRequest(localNow, eoris)
