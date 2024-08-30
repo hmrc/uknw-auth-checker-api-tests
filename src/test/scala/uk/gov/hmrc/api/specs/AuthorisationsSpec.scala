@@ -25,8 +25,6 @@ import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
-  private val myAuthService           = new AuthService
-  private val authBearerToken: String = myAuthService.getAuthBearerToken
 
   Feature("Example of creating bearer token") {
     Scenario("Checking bearer token") {
