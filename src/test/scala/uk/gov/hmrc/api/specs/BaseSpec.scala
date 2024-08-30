@@ -32,10 +32,11 @@ import scala.concurrent.duration.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
-  protected lazy val authService        = new AuthService
-  protected val checkerApiService       = new UknwAuthCheckerApiService
-  protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
-  protected val localNow: LocalDate     = LocalDate.now
+  protected lazy val authService: AuthService = new AuthService
+  protected lazy val authBearerToken: String  = authService.getAuthBearerToken
+  protected val checkerApiService             = new UknwAuthCheckerApiService
+  protected val zonedNow: ZonedDateTime       = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
+  protected val localNow: LocalDate           = LocalDate.now
 
   implicit val system: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: Materializer   = SystemMaterializer(system).materializer
