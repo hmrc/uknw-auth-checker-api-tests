@@ -35,7 +35,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
     }
   }
 
-  Feature("200 case Scenarios") {
+  Feature("200 case scenarios") {
 
     Scenario("Happy path with single authorised EORI - 200 OK") {
       Given("a bearer token")
