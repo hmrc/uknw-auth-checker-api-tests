@@ -23,7 +23,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.{Assertion, GivenWhenThen}
 import play.api.libs.ws.StandaloneWSResponse
 import play.api.mvc.Result
-import uk.gov.hmrc.api.service.UknwAuthCheckerApiService
+import uk.gov.hmrc.api.service.{AuthService, UknwAuthCheckerApiService}
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 import scala.concurrent.Await
@@ -31,7 +31,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
-
+  protected lazy val authService: AuthService = new AuthService
+  protected lazy val authBearerToken: String = authService.getAuthBearerToken
   protected val checkerApiService       = new UknwAuthCheckerApiService
   protected val zonedNow: ZonedDateTime = ZonedDateTime.of(LocalDate.now.atTime(LocalTime.MIDNIGHT), ZoneId.of("UTC"))
   protected val localNow: LocalDate     = LocalDate.now

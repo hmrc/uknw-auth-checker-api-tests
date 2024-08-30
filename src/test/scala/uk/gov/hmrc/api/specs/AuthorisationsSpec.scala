@@ -26,18 +26,6 @@ import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
-  private val myAuthService           = new AuthService
-  private val authBearerToken: String = myAuthService.getAuthBearerToken
-
-  Feature("Example of creating bearer token") {
-    Scenario("Checking bearer token") {
-      When("Getting bearer token")
-
-      Then("Said Bearer Token shouldn't contain an error")
-      authBearerToken shouldNot contain("Could not obtain auth bearer token. Auth Service Response:")
-    }
-  }
-
   Feature("200 case Scenarios") {
 
     Scenario("Happy path with single EORI - 200 OK") {
@@ -335,7 +323,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       val expectedResponse =
         RequestEntityTooLargeError.toResult
 
-      Then("I am returned a status code 500")
+      Then("I am returned a status code 413")
       response hasStatusAndBody expectedResponse
     }
   }
