@@ -21,7 +21,6 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages
-import uk.gov.hmrc.api.service.AuthService
 import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
