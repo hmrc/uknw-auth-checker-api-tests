@@ -31,6 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
+
   protected lazy val authService: AuthService = new AuthService
   protected lazy val authBearerToken: String  = authService.getAuthBearerToken
   protected val checkerApiService             = new UknwAuthCheckerApiService
