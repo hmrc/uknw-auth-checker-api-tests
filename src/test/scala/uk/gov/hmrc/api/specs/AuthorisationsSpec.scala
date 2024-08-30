@@ -26,10 +26,9 @@ import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
-  Feature("Example of creating bearer token") {
+  Feature("Is bearer token valid") {
     Scenario("Checking bearer token") {
       When("Getting bearer token")
-
       Then("Said Bearer Token shouldn't contain an error")
       authBearerToken shouldNot contain("Could not obtain auth bearer token. Auth Service Response:")
     }
