@@ -24,6 +24,7 @@ import org.scalatest.{Assertion, GivenWhenThen}
 import play.api.libs.ws.StandaloneWSResponse
 import play.api.mvc.Result
 import uk.gov.hmrc.api.service.{AuthService, UknwAuthCheckerApiService}
+import uk.gov.hmrc.api.utils.{TestHeaderNames, TestRegexes}
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 import scala.concurrent.Await
@@ -43,11 +44,14 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
 
   implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
 
-    def hasStatusAndBody(result: Result): Assertion = {
+    def hasStatusAndBodyAndTimestamp(result: Result): Assertion = {
       val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
 
       wsResponse.status        shouldBe result.header.status
       wsResponse.body.toString shouldBe body
+      wsResponse.header(TestHeaderNames.xTimestamp) match
+        case Some(header) => header should fullyMatch regex TestRegexes.iso8601DateTimeFormatPattern
+        case None => fail("X-Timestamp header not present")
     }
   }
 }
