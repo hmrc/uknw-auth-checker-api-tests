@@ -51,7 +51,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with multiple authorised EORIs - 200 OK") {
@@ -71,7 +71,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       ).toResult(expectedStatus = OK)
 
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with single unauthorised EORI - 200 OK") {
@@ -89,7 +89,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with multiple unauthorised EORIs - 200 OK") {
@@ -109,7 +109,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       ).toResult(expectedStatus = OK)
 
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with single authorised and unauthorised EORI - 200 OK") {
@@ -127,7 +127,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with multiple authorised and unauthorised EORIs - 200 OK") {
@@ -145,7 +145,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
   }
 
@@ -167,7 +167,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
       Then("I am returned a status code 200 and the correct response")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with two unauthorised duplicate EORIs - 200 OK") {
@@ -190,7 +190,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 200 and the correct response")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Happy path with two unauthorised duplicate EORIs and two authorised duplicate EORIs - 200 OK") {
@@ -215,7 +215,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 200 and the correct response")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
   }
 
@@ -238,7 +238,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Multiple Invalid Formatted EORIs - 400 Bad Request") {
@@ -261,7 +261,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Multiple Invalid Formatted EORIs with some valid authorised EORIs - 400 Bad Request") {
@@ -284,7 +284,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Multiple Invalid Formatted EORIs with some valid unauthorised EORIs - 400 Bad Request") {
@@ -307,7 +307,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario(
@@ -333,7 +333,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Duplicate Invalid Formatted EORI - 400 Bad Request") {
@@ -354,7 +354,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Not enough EORIS (0) - 400 Bad Request") {
@@ -374,7 +374,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse.toResult
+      response hasStatusAndBodyAndTimestamp expectedResponse.toResult
     }
 
     Scenario("Too many EORIS (3001) - 400 Bad Request") {
@@ -395,7 +395,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 400")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
   }
 
@@ -417,7 +417,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 401")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
 
     }
 
@@ -436,7 +436,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 401")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
   }
@@ -459,7 +459,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 406")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
 
     Scenario("Invalid Content-Type - 406 Not Acceptable") {
@@ -479,7 +479,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       Then("I am returned a status code 406")
 
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
   }
 
@@ -498,7 +498,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
         RequestEntityTooLargeError.toResult
 
       Then("I am returned a status code 413")
-      response hasStatusAndBody expectedResponse
+      response hasStatusAndBodyAndTimestamp expectedResponse
     }
   }
 }

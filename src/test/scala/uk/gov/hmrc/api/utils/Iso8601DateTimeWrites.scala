@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils.resources
-
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+package uk.gov.hmrc.api.utils
 
 import play.api.libs.json.Writes
 import play.api.libs.json.Writes.temporalWrites
+
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 object Iso8601DateTimeWrites {
   private val iso8601DateTimeFormat: String                 = "yyyy-MM-dd'T'HH:mm:ss.SS'Z'"

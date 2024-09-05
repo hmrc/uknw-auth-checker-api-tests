@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.models
 import play.api.libs.json.{Json, OFormat, Writes}
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
-import uk.gov.hmrc.api.utils.resources.Iso8601DateTimeWrites
+import uk.gov.hmrc.api.utils.Iso8601DateTimeWrites
 
 import java.time.ZonedDateTime
 
