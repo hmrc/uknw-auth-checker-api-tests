@@ -42,7 +42,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
   implicit val system: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: Materializer   = SystemMaterializer(system).materializer
 
-  implicit class ResponseExtensions(wsResponse: StandaloneWSResponse) {
+  extension (wsResponse: StandaloneWSResponse) {
 
     def hasStatusAndBodyAndTimestamp(result: Result): Assertion = {
       val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
