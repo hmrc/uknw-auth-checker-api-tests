@@ -20,7 +20,7 @@ import org.scalacheck.Gen
 import uk.gov.hmrc.api.models.constants.{CustomRegex, Eoris}
 import wolfendale.scalacheck.regexp.RegexpGen
 
-trait EoriGenerator extends Eoris with Generators {
+trait EoriGenerator extends Eoris, Generators {
 
   private val eoriGen: Gen[String] = RegexpGen.from(CustomRegex.eoriPattern)
 

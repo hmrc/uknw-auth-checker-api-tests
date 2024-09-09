@@ -27,7 +27,7 @@ import uk.gov.hmrc.api.models.constants.ApiErrorMessages.*
 import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
-class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
+class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
 
   Feature("Is bearer token valid") {
     Scenario("Checking bearer token") {
