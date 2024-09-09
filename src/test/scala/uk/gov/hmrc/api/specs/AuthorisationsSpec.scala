@@ -20,7 +20,10 @@ import play.api.http.Status
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.models.*
+import uk.gov.hmrc.api.models.ApiErrorDetails.*
+import uk.gov.hmrc.api.models.ApiErrorResponse.*
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages
+import uk.gov.hmrc.api.models.constants.ApiErrorMessages.*
 import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
@@ -232,7 +235,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = Seq(invalidEoriApiError(eoris.head))
+      val errors = Seq(InvalidEoriApiError(eoris.head))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -255,7 +258,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = eoris.map(eori => invalidEoriApiError(eori))
+      val errors = eoris.map(eori => InvalidEoriApiError(eori))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -278,7 +281,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
+      val errors = invalidEoris.map(eori => InvalidEoriApiError(eori))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -301,7 +304,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
+      val errors = invalidEoris.map(eori => InvalidEoriApiError(eori))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -327,7 +330,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = invalidEoris.map(eori => invalidEoriApiError(eori))
+      val errors = invalidEoris.map(eori => InvalidEoriApiError(eori))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 
@@ -348,7 +351,7 @@ class AuthorisationsSpec extends BaseSpec with EoriGenerator with TestData {
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
-      val errors = Seq(invalidEoriApiError(eoris.head))
+      val errors = Seq(InvalidEoriApiError(eoris.head))
 
       val expectedResponse = BadRequestApiError(errors).toResult
 

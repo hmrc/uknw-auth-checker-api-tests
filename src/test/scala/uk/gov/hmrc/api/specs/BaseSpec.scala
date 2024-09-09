@@ -51,7 +51,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {
       wsResponse.body.toString shouldBe body
       wsResponse.header(TestHeaderNames.xTimestamp) match
         case Some(header) => header should fullyMatch regex TestRegexes.iso8601DateTimeFormatPattern
-        case None => fail("X-Timestamp header not present")
+        case None         => fail("X-Timestamp header not present")
     }
   }
 }

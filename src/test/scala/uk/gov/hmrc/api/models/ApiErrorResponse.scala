@@ -22,117 +22,85 @@ import play.api.mvc.Result
 import play.api.mvc.Results.Status
 import uk.gov.hmrc.api.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths, MinMaxValues}
 
-sealed trait ApiErrorResponse {
-  def statusCode: Int
-  def code: String
-  def message: String
+enum ApiErrorResponse(val statusCode: Int, val code: String, val message: String) {
+  case ForbiddenApiError extends ApiErrorResponse(FORBIDDEN, ApiErrorCodes.forbidden, ApiErrorMessages.forbidden)
+  case InternalServerApiError
+      extends ApiErrorResponse(
+        INTERNAL_SERVER_ERROR,
+        ApiErrorCodes.internalServerError,
+        ApiErrorMessages.internalServerError
+      )
+  case NotFoundApiError
+      extends ApiErrorResponse(
+        NOT_FOUND,
+        ApiErrorCodes.matchingResourceNotFound,
+        ApiErrorMessages.matchingResourceNotFound
+      )
+  case MethodNotAllowedApiError
+      extends ApiErrorResponse(METHOD_NOT_ALLOWED, ApiErrorCodes.methodNotAllowed, ApiErrorMessages.methodNotAllowed)
+  case NotAcceptableApiError
+      extends ApiErrorResponse(NOT_ACCEPTABLE, ApiErrorCodes.notAcceptable, ApiErrorMessages.notAcceptable)
+  case ServiceUnavailableApiError
+      extends ApiErrorResponse(
+        SERVICE_UNAVAILABLE,
+        ApiErrorCodes.serviceUnavailable,
+        ApiErrorMessages.serviceUnavailable
+      )
+  case RequestEntityTooLargeError
+      extends ApiErrorResponse(
+        REQUEST_ENTITY_TOO_LARGE,
+        ApiErrorCodes.requestEntityTooLarge,
+        ApiErrorMessages.requestEntityTooLarge
+      )
+
+  case UnauthorizedApiError(reason: String)
+      extends ApiErrorResponse(UNAUTHORIZED, ApiErrorCodes.unauthorized, ApiErrorMessages.unauthorized)
+
+  case BadRequestApiError(errors: Seq[ApiErrorDetails])
+      extends ApiErrorResponse(BAD_REQUEST, ApiErrorCodes.badRequest, ApiErrorMessages.badRequest)
 
   def toResult: Result = Status(statusCode)(Json.toJson(this))
 }
 
 object ApiErrorResponse {
-  implicit val badRequestApiErrorWrites: Writes[BadRequestApiError] = Writes { model =>
-    Json.obj(
-      JsonPaths.code    -> model.code,
-      JsonPaths.message -> model.message,
-      JsonPaths.errors  -> model.errors
-    )
-  }
-
   implicit val writes: Writes[ApiErrorResponse] = {
-    case badRequest: BadRequestApiError => Json.toJson(badRequest)(badRequestApiErrorWrites)
-    case o                              =>
-      JsObject(
-        Seq(
-          JsonPaths.code    -> JsString(o.code),
-          JsonPaths.message -> JsString(o.message)
-        )
+    case badRequest: ApiErrorResponse.BadRequestApiError =>
+      Json.obj(
+        JsonPaths.code    -> badRequest.code,
+        JsonPaths.message -> badRequest.message,
+        JsonPaths.errors  -> badRequest.errors
+      )
+    case o                                               =>
+      Json.obj(
+        JsonPaths.code    -> o.code,
+        JsonPaths.message -> o.message
       )
   }
 }
 
-case object ForbiddenApiError extends ApiErrorResponse {
-  val statusCode: Int = FORBIDDEN
-  val code: String    = ApiErrorCodes.forbidden
-  val message: String = ApiErrorMessages.forbidden
-}
+enum ApiErrorDetails(val statusCode: Int, val code: String, val message: String, val path: String) {
+  case InvalidEoriCountApiError
+      extends ApiErrorDetails(
+        BAD_REQUEST,
+        ApiErrorCodes.invalidFormat,
+        ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori),
+        JsonPaths.eoris
+      )
 
-case object InternalServerApiError extends ApiErrorResponse {
-  val statusCode: Int = INTERNAL_SERVER_ERROR
-  val code: String    = ApiErrorCodes.internalServerError
-  val message: String = ApiErrorMessages.internalServerError
-}
-
-case object NotFoundApiError extends ApiErrorResponse {
-  val statusCode: Int = NOT_FOUND
-  val code: String    = ApiErrorCodes.matchingResourceNotFound
-  val message: String = ApiErrorMessages.matchingResourceNotFound
-}
-
-case object MethodNotAllowedApiError extends ApiErrorResponse {
-  val statusCode: Int = METHOD_NOT_ALLOWED
-  val code: String    = ApiErrorCodes.methodNotAllowed
-  val message: String = ApiErrorMessages.methodNotAllowed
-}
-
-case object NotAcceptableApiError extends ApiErrorResponse {
-  val statusCode: Int = NOT_ACCEPTABLE
-  val code: String    = ApiErrorCodes.notAcceptable
-  val message: String = ApiErrorMessages.notAcceptable
-}
-
-case object ServiceUnavailableApiError extends ApiErrorResponse {
-  val statusCode: Int = SERVICE_UNAVAILABLE
-  val code: String    = ApiErrorCodes.serviceUnavailable
-  val message: String = ApiErrorMessages.serviceUnavailable
-}
-
-final case class UnauthorizedApiError(reason: String) extends ApiErrorResponse {
-  val statusCode: Int = UNAUTHORIZED
-  val code: String    = ApiErrorCodes.unauthorized
-  val message: String = ApiErrorMessages.unauthorized
-}
-
-final case class BadRequestApiError(errors: Seq[ApiErrorDetails]) extends ApiErrorResponse {
-  val statusCode: Int = BAD_REQUEST
-  val code: String    = ApiErrorCodes.badRequest
-  val message: String = ApiErrorMessages.badRequest
-}
-
-case object RequestEntityTooLargeError extends ApiErrorResponse {
-  val statusCode: Int = REQUEST_ENTITY_TOO_LARGE
-  val code: String    = ApiErrorCodes.requestEntityTooLarge
-  val message: String = ApiErrorMessages.requestEntityTooLarge
-}
-
-sealed trait ApiErrorDetails {
-  def statusCode: Int
-  def code: String
-  def message: String
-  def path: String
+  case InvalidEoriApiError(eori: String)
+      extends ApiErrorDetails(
+        BAD_REQUEST,
+        ApiErrorCodes.invalidFormat,
+        ApiErrorMessages.invalidEori(eori),
+        JsonPaths.eoris
+      )
 }
 
 object ApiErrorDetails {
   implicit val writes: Writes[ApiErrorDetails] = (o: ApiErrorDetails) =>
-    JsObject(
-      Seq(
-        JsonPaths.code    -> JsString(o.code),
-        JsonPaths.message -> JsString(o.message),
-        JsonPaths.path    -> JsString(o.path)
-      )
+    Json.obj(
+      JsonPaths.code    -> o.code,
+      JsonPaths.message -> o.message,
+      JsonPaths.path    -> o.path
     )
-}
-
-case object InvalidEoriCountApiError extends ApiErrorDetails {
-  val statusCode: Int = BAD_REQUEST
-  val code: String    = ApiErrorCodes.invalidFormat
-  val message: String = ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori)
-  val path: String    = JsonPaths.eoris
-}
-
-final case class invalidEoriApiError(eori: String) extends ApiErrorDetails {
-  val statusCode: Int = BAD_REQUEST
-  val code: String    = ApiErrorCodes.invalidFormat
-  val message: String = ApiErrorMessages.invalidEori(eori)
-  val path: String    = JsonPaths.eoris
 }

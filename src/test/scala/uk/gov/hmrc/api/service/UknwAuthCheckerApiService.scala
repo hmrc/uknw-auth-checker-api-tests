@@ -50,5 +50,5 @@ class UknwAuthCheckerApiService extends HttpClient {
     url: String,
     headers: Seq[(String, String)] = Seq.empty,
     body: JsValue = Json.obj()
-  ): StandaloneWSResponse = Await.result(post(url, body.toString, headers *), 10.seconds)
+  ): StandaloneWSResponse = Await.result(post(url, body.toString, headers*), 10.seconds)
 }
