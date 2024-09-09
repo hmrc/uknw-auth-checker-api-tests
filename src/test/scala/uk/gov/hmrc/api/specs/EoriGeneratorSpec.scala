@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.specs
 import uk.gov.hmrc.api.models.constants.CustomRegex
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
-class EoriGeneratorSpec extends BaseSpec with EoriGenerator {
+class EoriGeneratorSpec extends BaseSpec, EoriGenerator {
 
   Feature("eoriGenerator") {
 
