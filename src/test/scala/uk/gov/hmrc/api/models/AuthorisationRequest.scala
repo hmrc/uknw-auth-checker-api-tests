@@ -25,4 +25,6 @@ object AuthorisationRequest {
 
   def toInvalidJsonStructure(request: AuthorisationRequest): String =
     Json.stringify(Json.toJson(request)(format)).replaceAll("\"eoris\"", "eoris")
+
+  def toInvalidJsObject(request: AuthorisationRequest): JsObject = Json.obj("eoris" -> request.eoris.head)
 }

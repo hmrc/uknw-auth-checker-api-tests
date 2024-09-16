@@ -91,6 +91,13 @@ enum ApiErrorDetails(val statusCode: Int, val code: String, val message: String,
         ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori),
         JsonPaths.eoris
       )
+  case JsObjectInvalidApiError
+      extends ApiErrorDetails(
+        BAD_REQUEST,
+        ApiErrorCodes.invalidFormat,
+        ApiErrorMessages.invalidJsonStructure,
+        JsonPaths.eoris
+      )
   case JSONStructureInvalidApiError
       extends ApiErrorDetails(
         BAD_REQUEST,

@@ -21,7 +21,7 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.models.ApiErrorDetails.*
 import uk.gov.hmrc.api.models.ApiErrorResponse.*
-import uk.gov.hmrc.api.models.AuthorisationRequest.toInvalidJsonStructure
+import uk.gov.hmrc.api.models.AuthorisationRequest.{toInvalidJsObject, toInvalidJsonStructure}
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages.*
 import uk.gov.hmrc.api.models.*
@@ -412,6 +412,27 @@ class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
 
       val errors = Seq(JSONStructureInvalidApiError)
+
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse =
+        BadRequestApiError(errors).toResult
+
+      Then("I am returned a status code 400")
+
+      response hasStatusAndBodyAndTimestamp expectedResponse
+    }
+
+    Scenario("JsObject passed instead of JsArray - 400 Bad Request") {
+      Given("a bearer token")
+      And("an invalid payload")
+
+      val eoris                = useEoriGenerator(1)
+      val authorisationRequest = toInvalidJsObject(AuthorisationRequest(eoris))
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+
+      val errors = Seq(JsObjectInvalidApiError)
 
       val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
 
