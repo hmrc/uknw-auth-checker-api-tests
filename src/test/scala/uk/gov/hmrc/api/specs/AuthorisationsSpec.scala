@@ -406,7 +406,7 @@ class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
       Given("a bearer token")
       And("an invalid payload")
 
-      val eoris = useEoriGenerator(1)
+      val eoris                = useEoriGenerator(1)
       val authorisationRequest = toInvalidJsonStructure(AuthorisationRequest(eoris))
 
       When("post a authorisations request to uknw-auth-checker-api with bearer token")
