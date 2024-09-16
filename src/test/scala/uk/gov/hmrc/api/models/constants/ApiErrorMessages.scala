@@ -23,6 +23,7 @@ object ApiErrorMessages {
   val invalidEori: String => String    = eori => s"$eori is not a supported EORI number"
   val invalidEoriCount: Int => String  = eoriMax =>
     s"The request payload must contain between 1 and $eoriMax EORI entries"
+  val invalidJsonStructure: String = "JSON structure is incorrect"
   val invalidRequest: String           = "Invalid request"
   val matchingResourceNotFound: String = "Matching resource not found"
   val methodNotAllowed: String         = "This method is not supported"
@@ -30,6 +31,5 @@ object ApiErrorMessages {
     "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
   val requestEntityTooLarge: String    = "Request Entity Too Large"
   val serviceUnavailable: String       = "Server is currently unable to handle the incoming requests"
-
   val unauthorized: String = "The bearer token is invalid, missing, or expired"
 }

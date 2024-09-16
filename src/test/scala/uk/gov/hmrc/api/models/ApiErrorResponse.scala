@@ -23,6 +23,8 @@ import play.api.mvc.Results.Status
 import uk.gov.hmrc.api.models.constants.{ApiErrorCodes, ApiErrorMessages, JsonPaths, MinMaxValues}
 
 enum ApiErrorResponse(val statusCode: Int, val code: String, val message: String) {
+  case BadRequestApiError(errors: Seq[ApiErrorDetails])
+      extends ApiErrorResponse(BAD_REQUEST, ApiErrorCodes.badRequest, ApiErrorMessages.badRequest)
   case ForbiddenApiError extends ApiErrorResponse(FORBIDDEN, ApiErrorCodes.forbidden, ApiErrorMessages.forbidden)
   case InternalServerApiError
       extends ApiErrorResponse(
@@ -30,21 +32,15 @@ enum ApiErrorResponse(val statusCode: Int, val code: String, val message: String
         ApiErrorCodes.internalServerError,
         ApiErrorMessages.internalServerError
       )
+  case MethodNotAllowedApiError
+      extends ApiErrorResponse(METHOD_NOT_ALLOWED, ApiErrorCodes.methodNotAllowed, ApiErrorMessages.methodNotAllowed)
+  case NotAcceptableApiError
+      extends ApiErrorResponse(NOT_ACCEPTABLE, ApiErrorCodes.notAcceptable, ApiErrorMessages.notAcceptable)
   case NotFoundApiError
       extends ApiErrorResponse(
         NOT_FOUND,
         ApiErrorCodes.matchingResourceNotFound,
         ApiErrorMessages.matchingResourceNotFound
-      )
-  case MethodNotAllowedApiError
-      extends ApiErrorResponse(METHOD_NOT_ALLOWED, ApiErrorCodes.methodNotAllowed, ApiErrorMessages.methodNotAllowed)
-  case NotAcceptableApiError
-      extends ApiErrorResponse(NOT_ACCEPTABLE, ApiErrorCodes.notAcceptable, ApiErrorMessages.notAcceptable)
-  case ServiceUnavailableApiError
-      extends ApiErrorResponse(
-        SERVICE_UNAVAILABLE,
-        ApiErrorCodes.serviceUnavailable,
-        ApiErrorMessages.serviceUnavailable
       )
   case RequestEntityTooLargeError
       extends ApiErrorResponse(
@@ -52,12 +48,14 @@ enum ApiErrorResponse(val statusCode: Int, val code: String, val message: String
         ApiErrorCodes.requestEntityTooLarge,
         ApiErrorMessages.requestEntityTooLarge
       )
-
+  case ServiceUnavailableApiError
+      extends ApiErrorResponse(
+        SERVICE_UNAVAILABLE,
+        ApiErrorCodes.serviceUnavailable,
+        ApiErrorMessages.serviceUnavailable
+      )
   case UnauthorizedApiError(reason: String)
       extends ApiErrorResponse(UNAUTHORIZED, ApiErrorCodes.unauthorized, ApiErrorMessages.unauthorized)
-
-  case BadRequestApiError(errors: Seq[ApiErrorDetails])
-      extends ApiErrorResponse(BAD_REQUEST, ApiErrorCodes.badRequest, ApiErrorMessages.badRequest)
 
   def toResult: Result = Status(statusCode)(Json.toJson(this))
 }
@@ -79,6 +77,13 @@ object ApiErrorResponse {
 }
 
 enum ApiErrorDetails(val statusCode: Int, val code: String, val message: String, val path: String) {
+  case InvalidEoriApiError(eori: String)
+      extends ApiErrorDetails(
+        BAD_REQUEST,
+        ApiErrorCodes.invalidFormat,
+        ApiErrorMessages.invalidEori(eori),
+        JsonPaths.eoris
+      )
   case InvalidEoriCountApiError
       extends ApiErrorDetails(
         BAD_REQUEST,
@@ -86,13 +91,12 @@ enum ApiErrorDetails(val statusCode: Int, val code: String, val message: String,
         ApiErrorMessages.invalidEoriCount(MinMaxValues.maxEori),
         JsonPaths.eoris
       )
-
-  case InvalidEoriApiError(eori: String)
+  case JSONStructureInvalidApiError
       extends ApiErrorDetails(
         BAD_REQUEST,
         ApiErrorCodes.invalidFormat,
-        ApiErrorMessages.invalidEori(eori),
-        JsonPaths.eoris
+        ApiErrorMessages.invalidJsonStructure,
+        JsonPaths.empty
       )
 }
 
