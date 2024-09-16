@@ -22,4 +22,5 @@ object JsonPaths {
   val errors: String  = "errors"
   val message: String = "message"
   val path: String    = "path"
+  val empty: String   = ""
 }
