@@ -30,6 +30,6 @@ object ApiErrorMessages {
   val notAcceptable: String            =
     "Cannot produce an acceptable response. The Accept or Content-Type header is missing or invalid"
   val requestEntityTooLarge: String    = "Request Entity Too Large"
-  val serviceUnavailable: String       = "Server is currently unable to handle the incoming requests"
+  val serviceUnavailable: String       = "Service Unavailable"
   val unauthorized: String             = "The bearer token is invalid, missing, or expired"
 }

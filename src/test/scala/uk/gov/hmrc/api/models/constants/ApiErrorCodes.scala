@@ -25,6 +25,6 @@ object ApiErrorCodes {
   val methodNotAllowed: String         = "METHOD_NOT_ALLOWED"
   val notAcceptable: String            = "NOT_ACCEPTABLE"
   val requestEntityTooLarge: String    = "REQUEST_ENTITY_TOO_LARGE"
-  val serviceUnavailable: String       = "SERVICE_UNAVAILABLE"
+  val serviceUnavailable: String       = "SERVER_ERROR"
   val unauthorized: String             = "UNAUTHORIZED"
 }
