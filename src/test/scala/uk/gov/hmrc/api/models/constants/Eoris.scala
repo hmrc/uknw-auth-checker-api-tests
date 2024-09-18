@@ -17,7 +17,7 @@
 package uk.gov.hmrc.api.models.constants
 
 trait Eoris {
-  
+
   val reservedEoris: Map[Int, String] = Map(
     403 -> "GB999999999999403",
     500 -> "GB999999999999500",
