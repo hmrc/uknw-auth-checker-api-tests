@@ -27,24 +27,25 @@ import scala.concurrent.duration.DurationInt
 class UknwAuthCheckerApiService extends HttpClient {
 
   private val authorisationsUrl: String = TestConfiguration.url("uknw-auth-checker-api")
-  private val defaultContentType        = "application/json"
-  private val defaultAcceptInput        = "application/vnd.hmrc.1.0+json"
 
   def authorisations(
     individualPayload: JsValue,
-    authToken: String = "",
-    contentType: String = defaultContentType,
-    acceptInput: String = defaultAcceptInput
-  ): StandaloneWSResponse =
+    authToken: Option[String],
+    acceptInput: String,
+    contentType: String
+  ): StandaloneWSResponse = {
+
+    val headers = Seq(
+      "Accept"       -> acceptInput,
+      "Content-Type" -> contentType
+    ) ++ authToken.map(bearerToken => "Authorization" -> bearerToken)
+
     awaitRequest(
       authorisationsUrl,
-      Seq(
-        "Content-Type"  -> contentType,
-        "Accept"        -> acceptInput,
-        "Authorization" -> authToken
-      ),
+      headers,
       individualPayload
     )
+  }
 
   private def awaitRequest(
     url: String,
