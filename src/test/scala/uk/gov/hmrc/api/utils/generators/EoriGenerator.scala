@@ -22,7 +22,12 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 trait EoriGenerator extends Eoris, Generators {
 
-  private val eoriGen: Gen[String] = RegexpGen.from(CustomRegex.eoriPattern)
+  implicit class EoriGenOps(gen: Gen[String]) {
+    def excludeReserved: Gen[String] =
+      gen.suchThat(eori => !reservedEoris.values.toSet.contains(eori))
+  }
+
+  private val eoriGen: Gen[String] = RegexpGen.from(CustomRegex.eoriPattern).excludeReserved
 
   private def authorisedEoriGen(numberOfAuthorisedEoris: Int): Gen[Seq[String]] =
     Gen.pick(numberOfAuthorisedEoris, authorisedEoris).map(_.toSeq)

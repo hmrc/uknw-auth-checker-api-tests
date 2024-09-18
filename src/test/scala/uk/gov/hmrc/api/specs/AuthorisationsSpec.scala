@@ -29,6 +29,8 @@ import uk.gov.hmrc.api.utils.TestData
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
 class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
+  
+  
 
   Feature("Is bearer token valid") {
     Scenario("Checking bearer token") {
@@ -487,6 +489,27 @@ class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
 
   }
 
+  Feature("403, FORBIDDEN case scenarios") {
+    Scenario("Unauthorised - 403 Forbidden") {
+      Given("a valid non authorised request")
+
+      val eoris = Seq(reservedEoris(403))
+
+      And("a valid payload")
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse = ForbiddenApiError.toResult
+
+      Then("I am returned a status code 403")
+
+      response hasStatusAndBodyAndTimestamp expectedResponse
+
+    }
+  }
+
   Feature("406, NOT_ACCEPTABLE case scenarios") {
     Scenario("Invalid Accept - 406 Not Acceptable") {
       Given("Valid bearer token")
@@ -545,6 +568,48 @@ class AuthorisationsSpec extends BaseSpec, EoriGenerator, TestData {
 
       Then("I am returned a status code 413")
       response hasStatusAndBodyAndTimestamp expectedResponse
+    }
+  }
+
+  Feature("500, INTERNAL SERVER ERROR case scenarios") {
+    Scenario("Internal Server Error - 500 Internal Server Error") {
+      Given("a valid request and something goes wrong on the server")
+
+      val eoris = Seq(reservedEoris(500))
+
+      And("a valid payload")
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse = InternalServerApiError.toResult
+
+      Then("I am returned a status code 500")
+
+      response hasStatusAndBodyAndTimestamp expectedResponse
+
+    }
+  }
+
+  Feature("503, SERVICE UNAVAILABLE case scenarios") {
+    Scenario("Service Unavailable - 503 Service Unavailable") {
+      Given("a valid request and the server is unavailable")
+
+      val eoris = Seq(reservedEoris(503))
+
+      And("a valid payload")
+      val authorisationRequest = AuthorisationRequest(eoris)
+
+      When("post a authorisations request to uknw-auth-checker-api with bearer token")
+      val response = checkerApiService.authorisations(Json.toJson(authorisationRequest), authBearerToken)
+
+      val expectedResponse = ServiceUnavailableApiError.toResult
+
+      Then("I am returned a status code 500")
+
+      response hasStatusAndBodyAndTimestamp expectedResponse
+
     }
   }
 }
