@@ -45,7 +45,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Multiple authorised EORIs") {
-      Given("a bearer token")
       val eoris            = useEoriGenerator(fetchRandomNumber(2, authorisedEoris.size))
       val request          = AuthorisationRequest(eoris)
       val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
@@ -97,7 +96,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Two duplicate unauthorised EORIs") {
-      Given("a bearer token")
       val eori             = useEoriGenerator(1, Some(0)).head
       val eoris            = Seq(eori, eori)
       val request          = AuthorisationRequest(eoris)
@@ -106,7 +104,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Two duplicate authorised and unauthorised EORIs") {
-      Given("a bearer token")
       val unauthorisedEori = useEoriGenerator(1, Some(0)).head
       val authorisedEori   = useEoriGenerator(1).head
       val eoris            = Seq(unauthorisedEori, unauthorisedEori, authorisedEori, authorisedEori)
@@ -127,7 +124,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Multiple invalid EORIs") {
-      Given("a bearer token")
       val eoris  = useGarbageGenerator(authorisedEoris.size)
       val errors = generateInvalidEoriErrors(eoris)
       postAndAssertBadRequest(
@@ -229,7 +225,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
   }
 
-  Feature("Bearer token invalid - 401 Forbidden") {
+  Feature("Bearer Token Invalid Scenarios - 401 Forbidden") {
     Scenario("Invalid Bearer Token") {
       val eoris                      = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
       val invalidBearerToken: String = "Invalid Token"
@@ -266,6 +262,17 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
   }
 
+  Feature("Forbidden Scenarios - 403 Forbidden") {
+    Scenario("A valid non authorised request") {
+      val eoris  = Seq(reservedEoris(403))
+      val errors = ForbiddenApiError
+      postAndAssertBadRequest(
+        eoris,
+        errors
+      )
+    }
+  }
+
   Feature("Invalid headers - 406 Not Acceptable") {
     Scenario("Invalid Accept Header") {
       val eoris  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
@@ -295,6 +302,28 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Invalid request with a massive string size of EORIs causing the request to be over 100KB") {
       val eoris  = useUnrestrictedGarbageGenerator(authorisedEoris.size)
       val errors = RequestEntityTooLargeError
+      postAndAssertBadRequest(
+        eoris,
+        errors
+      )
+    }
+  }
+
+  Feature("Internal Server Error Scenarios - 500 Internal Server Error") {
+    Scenario("A valid request and something goes wrong on the server") {
+      val eoris  = Seq(reservedEoris(500))
+      val errors = InternalServerApiError
+      postAndAssertBadRequest(
+        eoris,
+        errors
+      )
+    }
+  }
+
+  Feature("Service Unavailable Scenarios - 503 Service Unavailable") {
+    Scenario("A valid request and the server is unavailable") {
+      val eoris  = Seq(reservedEoris(503))
+      val errors = ServiceUnavailableApiError
       postAndAssertBadRequest(
         eoris,
         errors

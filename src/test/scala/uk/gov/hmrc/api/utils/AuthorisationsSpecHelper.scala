@@ -32,11 +32,11 @@ trait AuthorisationsSpecHelper extends BaseSpec, EoriGenerator, TestData {
   private val defaultContentType = "application/json"
   private val defaultAcceptInput = "application/vnd.hmrc.1.0+json"
 
-  implicit class APiErrorDetailOps(errors: ApiErrorDetails) {
+  extension (errors: ApiErrorDetails) {
     def toAPIErrorResponse: ApiErrorResponse = BadRequestApiError(Seq(errors))
   }
 
-  implicit class APiErrorDetailsOps(errors: Seq[ApiErrorDetails]) {
+  extension (errors: Seq[ApiErrorDetails]) {
     def toAPIErrorResponse: ApiErrorResponse = BadRequestApiError(errors)
   }
 
