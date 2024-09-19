@@ -45,7 +45,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Multiple authorised EORIs") {
-      Given("a bearer token")
       val eoris            = useEoriGenerator(fetchRandomNumber(2, authorisedEoris.size))
       val request          = AuthorisationRequest(eoris)
       val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
@@ -97,7 +96,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Two duplicate unauthorised EORIs") {
-      Given("a bearer token")
       val eori             = useEoriGenerator(1, Some(0)).head
       val eoris            = Seq(eori, eori)
       val request          = AuthorisationRequest(eoris)
@@ -106,7 +104,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Two duplicate authorised and unauthorised EORIs") {
-      Given("a bearer token")
       val unauthorisedEori = useEoriGenerator(1, Some(0)).head
       val authorisedEori   = useEoriGenerator(1).head
       val eoris            = Seq(unauthorisedEori, unauthorisedEori, authorisedEori, authorisedEori)
@@ -127,7 +124,6 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     }
 
     Scenario("Multiple invalid EORIs") {
-      Given("a bearer token")
       val eoris  = useGarbageGenerator(authorisedEoris.size)
       val errors = generateInvalidEoriErrors(eoris)
       postAndAssertBadRequest(
