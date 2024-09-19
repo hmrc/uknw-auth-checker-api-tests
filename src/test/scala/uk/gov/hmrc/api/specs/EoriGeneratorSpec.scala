@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.api.specs
 
+import org.scalacheck.Gen
 import uk.gov.hmrc.api.models.constants.CustomRegex
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
@@ -163,5 +164,13 @@ class EoriGeneratorSpec extends BaseSpec, EoriGenerator {
     strings.nonEmpty             shouldBe true
     strings.size <= randomNumber shouldBe true
     strings.distinct.size        shouldBe strings.size
+  }
+
+  Scenario("excludedReserved extension must prevent reserved eoris from being generated") {
+    val eoris: Seq[String] = reservedEoris.values.toSeq
+
+    val generator: Gen[String] = Gen.oneOf(eoris).excludeReserved
+    val result                 = generator.sample
+    result shouldBe None
   }
 }

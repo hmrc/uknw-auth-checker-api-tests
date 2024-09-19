@@ -310,22 +310,24 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
   }
 
   Feature("Internal Server Error Scenarios - 500 Internal Server Error") {
-    Given("A valid request and something goes wrong on the server")
-    val eoris  = Seq(reservedEoris(500))
-    val errors = InternalServerApiError
-    postAndAssertBadRequest(
-      eoris,
-      errors
-    )
+    Scenario("A valid request and something goes wrong on the server") {
+      val eoris  = Seq(reservedEoris(500))
+      val errors = InternalServerApiError
+      postAndAssertBadRequest(
+        eoris,
+        errors
+      )
+    }
   }
 
   Feature("Service Unavailable Scenarios - 503 Service Unavailable") {
-    Given("A valid request and the server is unavailable")
-    val eoris  = Seq(reservedEoris(503))
-    val errors = ServiceUnavailableApiError
-    postAndAssertBadRequest(
-      eoris,
-      errors
-    )
+    Scenario("A valid request and the server is unavailable") {
+      val eoris  = Seq(reservedEoris(503))
+      val errors = ServiceUnavailableApiError
+      postAndAssertBadRequest(
+        eoris,
+        errors
+      )
+    }
   }
 }
