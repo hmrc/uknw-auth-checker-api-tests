@@ -50,6 +50,7 @@ The index.html is the root page to view the results in a browser.
 > [alert-filters.json](https://github.com/hmrc/uknw-auth-checker-api-tests/blob/main/alert-filters.json) file.
 
 ## API pipeline tests - Jenkins
+### Worth noting that since version 3.1.0-M1 of the play-ws-standalone-json, Java 17 is required for the correct functioning of the pipeline
 
 Run tests as follows:
 
