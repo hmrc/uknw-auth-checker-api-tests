@@ -6,7 +6,7 @@
       "url": "http://localhost:9070/authorisations",
       "ruleId": 10021,
       "urlIsRegex": "true",
-      "newLevel": 0
+      "newLevel": -1
     },
     {
       "reason": "Information Disclosure - Debug Error Messages",
