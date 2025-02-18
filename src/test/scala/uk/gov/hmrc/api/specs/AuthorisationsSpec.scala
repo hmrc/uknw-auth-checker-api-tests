@@ -16,14 +16,12 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalatest.Assertion
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.ApiErrorDetails.*
 import uk.gov.hmrc.api.models.ApiErrorResponse.*
 import uk.gov.hmrc.api.models.AuthorisationRequest.{toInvalidJsObject, toInvalidJsonStructure}
 import uk.gov.hmrc.api.models.constants.ApiErrorMessages
-import uk.gov.hmrc.api.models.constants.ApiErrorMessages.*
 import uk.gov.hmrc.api.utils.AuthorisationsSpecHelper
 
 class AuthorisationsSpec extends AuthorisationsSpecHelper {
