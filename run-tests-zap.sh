@@ -13,8 +13,11 @@ cd "$(dirname "$0")" # Always run from script location
 # We assume you started all required services using 'sm2' and MongoDB if needed
 
 export ZAP_FAIL_ON_SEVERITY=Low # Allowed values: High, Medium, Low, Informational
+export ZAP_LOCAL_SCANNER_CONFIG=sm-api.json
 export ZAP_FORWARD_ENABLE="true"
-ZAP_FORWARD_PORTS=$(sm2 -s | grep -E 'PASS|BOOT'| grep -v 'MONGO' | awk '{ print $8}' | tr "\n" " ")
+UKNW_AUTH_CHECKER_API="9070"
+UKNW_AUTH_CHECKER_API_STUB="9071"
+ZAP_FORWARD_PORTS="$UKNW_AUTH_CHECKER_API $UKNW_AUTH_CHECKER_API_STUB $(sm2 -s | grep -E 'PASS|BOOT'| grep -v -E 'MONGO|UKNW_AUTH_CHECKER_API|UKNW_AUTH_CHECKER_API_STUB' | awk '{ print $8}' | tr "\n" " ")"
 export ZAP_FORWARD_PORTS
 
 if [[ -f alert-filters.json ]]; then
@@ -31,11 +34,9 @@ fi
     # git reset --hard origin/main
     make local-zap-running
 )
-
 TEST_FAILED=false
 # Modify following sbt command accordingly to your tests
-sbt clean -Denvironment="${ENVIRONMENT:=local}" -Dzap.proxy=true "testOnly uk.gov.hmrc.api.specs.*" || TEST_FAILED=true
-
+sbt clean -Denvironment="${ENVIRONMENT:=local}" -Dzap.proxy=true -Dsecurity.assessment=true "testOnly uk.gov.hmrc.api.specs.*" || TEST_FAILED=true
 (
     cd dast-config-manager
     make local-zap-stop
