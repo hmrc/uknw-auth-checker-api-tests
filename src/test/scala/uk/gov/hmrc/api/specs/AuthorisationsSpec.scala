@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.ApiErrorDetails.*
 import uk.gov.hmrc.api.models.ApiErrorResponse.*

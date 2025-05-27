@@ -44,7 +44,7 @@ trait BaseSpec extends AnyFeatureSpec, GivenWhenThen, Matchers {
 
   extension (wsResponse: StandaloneWSResponse) {
 
-    def hasStatusAndBodyAndTimestamp(result: Result): Assertion = {
+    infix def hasStatusAndBodyAndTimestamp(result: Result): Assertion = {
       val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
 
       wsResponse.status        shouldBe result.header.status

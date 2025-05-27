@@ -30,7 +30,7 @@ trait Generators {
 
   protected def garbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]]             =
     Gen.listOfN(i, specificSizeAlphaNumStrGen(maxSizeOfStrings))
-  protected def unrestrictedGarbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]] =
+  protected def unrestrictedGarbageGenerator(i: Int): Gen[Seq[String]] =
     Gen.listOfN(i, Gen.alphaNumStr)
 
   protected def useGarbageGenerator(amountOfValues: Int, maxSizeOfStrings: Int = maxStringSize): Seq[String] =
@@ -38,6 +38,5 @@ trait Generators {
 
   protected def useUnrestrictedGarbageGenerator(
     amountOfValues: Int,
-    maxSizeOfStrings: Int = maxStringSize
-  ): Seq[String] = unrestrictedGarbageGenerator(amountOfValues, maxSizeOfStrings).sample.get.distinct
+  ): Seq[String] = unrestrictedGarbageGenerator(amountOfValues).sample.get.distinct
 }

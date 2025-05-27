@@ -24,7 +24,7 @@ object AuthorisationRequest {
   implicit val format: OFormat[AuthorisationRequest] = Json.format[AuthorisationRequest]
 
   def toInvalidJsonStructure(request: AuthorisationRequest): JsValue =
-    Json.toJson(Json.stringify(Json.toJson(request)(format)).replaceAll("\"eoris\"", "eoris"))
+    Json.toJson(Json.stringify(Json.toJson(request)(using format)).replaceAll("\"eoris\"", "eoris"))
 
   def toInvalidJsObject(request: AuthorisationRequest): JsValue = Json.toJson(Json.obj("eoris" -> request.eoris.head))
 }
