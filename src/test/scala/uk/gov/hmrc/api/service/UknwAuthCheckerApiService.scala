@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.api.service
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.client.HttpClient
 import uk.gov.hmrc.api.conf.TestConfiguration
@@ -49,7 +49,7 @@ class UknwAuthCheckerApiService extends HttpClient {
 
   private def awaitRequest(
     url: String,
-    headers: Seq[(String, String)] = Seq.empty,
-    body: JsValue = Json.obj()
+    headers: Seq[(String, String)],
+    body: JsValue
   ): StandaloneWSResponse = Await.result(post(url, body.toString, headers*), 100.seconds)
 }

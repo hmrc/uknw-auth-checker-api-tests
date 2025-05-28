@@ -17,17 +17,17 @@
 package uk.gov.hmrc.api.utils
 
 import org.scalatest.Assertion
-import play.api.http.Status
 import play.api.http.Status.OK
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.api.models.*
 import uk.gov.hmrc.api.models.ApiErrorDetails.*
 import uk.gov.hmrc.api.models.ApiErrorResponse.*
+import uk.gov.hmrc.api.models.constants.Eoris
 import uk.gov.hmrc.api.specs.BaseSpec
 import uk.gov.hmrc.api.utils.generators.EoriGenerator
 
-trait AuthorisationsSpecHelper extends BaseSpec, EoriGenerator, TestData {
+trait AuthorisationsSpecHelper extends BaseSpec, EoriGenerator, Eoris {
 
   private val defaultContentType = "application/json"
   private val defaultAcceptInput = "application/vnd.hmrc.1.0+json"

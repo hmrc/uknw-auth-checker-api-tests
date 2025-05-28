@@ -35,11 +35,11 @@ trait HttpClient {
   private def defaultRequest(url: String, headers: (String, String)*): StandaloneWSRequest = {
     val request = wsClient
       .url(url)
-      .withHttpHeaders(headers: _*)
+      .withHttpHeaders(headers*)
     if (isEnabled) request.withProxyServer(proxyServer) else request
   }
 
   def post(url: String, bodyAsJson: String, headers: (String, String)*): Future[StandaloneWSResponse] =
-    defaultRequest(url, headers: _*)
+    defaultRequest(url, headers*)
       .post(bodyAsJson)
 }
