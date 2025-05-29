@@ -344,5 +344,21 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
       postAndAssertOk(request, expectedResponse)
     }
+
+    Scenario("A valid request with an EORI that returns a none date from EIS, and returns true") {
+      val eoriWithEisDateNone = "GB992697819786102"
+      val eoris = Seq(eoriWithEisDateNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns a none for all EIS properties, and returns false") {
+      val eoriWithEisAllNone = "GB999999999999601"
+      val eoris = Seq(eoriWithEisAllNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = false)
+      postAndAssertOk(request, expectedResponse)
+    }
   }
 }
