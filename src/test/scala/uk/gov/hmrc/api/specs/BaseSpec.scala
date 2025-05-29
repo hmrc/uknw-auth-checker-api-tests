@@ -42,14 +42,14 @@ trait BaseSpec extends AnyFeatureSpec, GivenWhenThen, Matchers {
   implicit val system: ActorSystem = ActorSystem("TestActorSystem")
   implicit val mat: Materializer   = SystemMaterializer(system).materializer
 
-  extension (wsResponse: StandaloneWSResponse) {
+  extension (actualResponse: StandaloneWSResponse) {
 
-    infix def hasStatusAndBodyAndTimestamp(result: Result): Assertion = {
-      val body = Await.result(result.body.consumeData.map(_.utf8String), 10.seconds)
+    infix def hasStatusAndBodyAndTimestamp(expectedResponse: Result): Assertion = {
+      val body = Await.result(expectedResponse.body.consumeData.map(_.utf8String), 10.seconds)
 
-      wsResponse.status        shouldBe result.header.status
-      wsResponse.body.toString shouldBe body
-      wsResponse.header(TestHeaderNames.xTimestamp) match
+      actualResponse.status        shouldBe expectedResponse.header.status
+      actualResponse.body.toString shouldBe body
+      actualResponse.header(TestHeaderNames.xTimestamp) match
         case Some(header) => header should fullyMatch regex TestRegexes.iso8601DateTimeFormatPattern
         case None         => fail("X-Timestamp header not present")
     }
