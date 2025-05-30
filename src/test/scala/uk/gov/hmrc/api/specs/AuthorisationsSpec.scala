@@ -114,7 +114,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Single invalid EORI") {
       val eoris  = useGarbageGenerator(1)
       val errors = generateInvalidEoriErrors(eoris)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -123,7 +123,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Multiple invalid EORIs") {
       val eoris  = useGarbageGenerator(authorisedEoris.size)
       val errors = generateInvalidEoriErrors(eoris)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -136,7 +136,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val authorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10))
       val eoris           = invalidEoris ++ authorisedEoris
       val errors          = generateInvalidEoriErrors(invalidEoris)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -147,7 +147,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
       val eoris             = invalidEoris ++ unauthorisedEoris
       val errors            = generateInvalidEoriErrors(invalidEoris)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -159,7 +159,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val unauthorisedEoris = useEoriGenerator(fetchRandomNumber(1, 10), Some(0))
       val eoris             = invalidEoris ++ authorisedEoris ++ unauthorisedEoris
       val errors            = generateInvalidEoriErrors(invalidEoris)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -171,7 +171,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eori   = useGarbageGenerator(1).head
       val eoris  = Seq(eori, eori)
       val errors = generateInvalidEoriErrors(eoris.distinct)
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -182,7 +182,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Not enough EORIS (0)") {
       val eoris  = useEoriGenerator(authorisedEoris.size + 10, Some(authorisedEoris.size))
       val errors = InvalidEoriCountApiError.toAPIErrorResponse
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -191,7 +191,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Too many EORIS (3001)") {
       val eoris  = useEoriGenerator(authorisedEoris.size + 10, Some(authorisedEoris.size))
       val errors = InvalidEoriCountApiError.toAPIErrorResponse
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -203,7 +203,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eoris                               = useEoriGenerator(1)
       val invalidJsObjectAuthorisationRequest = toInvalidJsObject(AuthorisationRequest(eoris))
       val errors                              = JsObjectInvalidApiError.toAPIErrorResponse
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         Some(invalidJsObjectAuthorisationRequest)
@@ -214,7 +214,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eoris                                    = useEoriGenerator(1)
       val invalidJsonStructureAuthorisationRequest = toInvalidJsonStructure(AuthorisationRequest(eoris))
       val errors                                   = JSONStructureInvalidApiError.toAPIErrorResponse
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         Some(invalidJsonStructureAuthorisationRequest)
@@ -228,7 +228,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val invalidBearerToken: String = "Invalid Token"
       val errors                     = UnauthorizedApiError(ApiErrorMessages.unauthorized)
 
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         bearerToken = Some(invalidBearerToken)
@@ -240,7 +240,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val invalidBearerToken: String = ""
       val errors                     = UnauthorizedApiError(ApiErrorMessages.unauthorized)
 
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         bearerToken = Some(invalidBearerToken)
@@ -251,7 +251,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eoris  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
       val errors = UnauthorizedApiError(ApiErrorMessages.unauthorized)
 
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         bearerToken = None
@@ -263,7 +263,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("A valid non authorised request") {
       val eoris  = Seq(reservedEoris(403))
       val errors = ForbiddenApiError
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -275,7 +275,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eoris  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
       val errors = NotAcceptableApiError
 
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         acceptInputHeader = "Invalid"
@@ -287,7 +287,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
       val eoris  = useEoriGenerator(fetchRandomNumber(1, authorisedEoris.size))
       val errors = NotAcceptableApiError
 
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors,
         contentTypeHeader = "Invalid"
@@ -299,7 +299,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("Invalid request with a massive string size of EORIs causing the request to be over 100KB") {
       val eoris  = useUnrestrictedGarbageGenerator(authorisedEoris.size)
       val errors = RequestEntityTooLargeError
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -310,7 +310,7 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("A valid request and something goes wrong on the server") {
       val eoris  = Seq(reservedEoris(500))
       val errors = InternalServerApiError
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
@@ -321,10 +321,69 @@ class AuthorisationsSpec extends AuthorisationsSpecHelper {
     Scenario("A valid request and the server is unavailable") {
       val eoris  = Seq(reservedEoris(503))
       val errors = ServiceUnavailableApiError
-      postAndAssertBadRequest(
+      postAndAssertError(
         eoris,
         errors
       )
     }
+  }
+
+  Feature("Optional empty EIS response return - 200") {
+    Scenario("A valid request with an EORI that returns a none authtype from EIS, and returns true") {
+      val eoriWithEisAuthTypeNone = "GB992154091220"
+      val eoris = Seq(eoriWithEisAuthTypeNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns a none date and authtype from EIS, and returns true") {
+      val eoriWithEisDateAndAuthTypeNone = "GB992692280526"
+      val eoris = Seq(eoriWithEisDateAndAuthTypeNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns a none date from EIS, and returns true") {
+      val eoriWithEisDateNone = "GB992697819786102"
+      val eoris = Seq(eoriWithEisDateNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = true)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns a none for all EIS properties, and returns false") {
+      val eoriWithEisAllNone = "GB999999999999601"
+      val eoris = Seq(eoriWithEisAllNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = false)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns an empty Result and authtype from EIS and returns false") {
+      val eoriWithEisResultsAndAuthTypeNone = "GB999999999999604"
+      val eoris = Seq(eoriWithEisResultsAndAuthTypeNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = false)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns an empty Result and Date from EIS and returns false") {
+      val eoriWithEisResultsAndDateNone = "GB999999999999603"
+      val eoris = Seq(eoriWithEisResultsAndDateNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = false)
+      postAndAssertOk(request, expectedResponse)
+    }
+
+    Scenario("A valid request with an EORI that returns an empty Result from EIS and returns false") {
+      val eoriWithEisResultsNone = "GB999999999999602"
+      val eoris = Seq(eoriWithEisResultsNone)
+      val request = AuthorisationRequest(eoris)
+      val expectedResponse = generateExpectedOkResponse(eoris, authorised = false)
+      postAndAssertOk(request, expectedResponse)
+    }
+
   }
 }

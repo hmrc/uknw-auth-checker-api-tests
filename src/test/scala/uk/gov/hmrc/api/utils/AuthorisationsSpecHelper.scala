@@ -61,7 +61,7 @@ trait AuthorisationsSpecHelper extends BaseSpec, EoriGenerator, Eoris {
     response hasStatusAndBodyAndTimestamp expectedResponse
   }
 
-  def postAndAssertBadRequest(
+  def postAndAssertError(
     eoris: Seq[String],
     errors: ApiErrorResponse,
     authorisationRequest: Option[JsValue] = None,
