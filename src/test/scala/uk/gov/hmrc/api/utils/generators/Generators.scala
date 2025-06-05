@@ -28,15 +28,15 @@ trait Generators {
 
   protected def fetchRandomNumber(min: Int, max: Int): Int = Gen.choose(min, max).sample.get
 
-  protected def garbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]]             =
+  protected def garbageGenerator(i: Int, maxSizeOfStrings: Int): Gen[Seq[String]] =
     Gen.listOfN(i, specificSizeAlphaNumStrGen(maxSizeOfStrings))
-  protected def unrestrictedGarbageGenerator(i: Int): Gen[Seq[String]] =
+  protected def unrestrictedGarbageGenerator(i: Int): Gen[Seq[String]]            =
     Gen.listOfN(i, Gen.alphaNumStr)
 
   protected def useGarbageGenerator(amountOfValues: Int, maxSizeOfStrings: Int = maxStringSize): Seq[String] =
     garbageGenerator(amountOfValues, maxSizeOfStrings).sample.get.distinct
 
   protected def useUnrestrictedGarbageGenerator(
-    amountOfValues: Int,
+    amountOfValues: Int
   ): Seq[String] = unrestrictedGarbageGenerator(amountOfValues).sample.get.distinct
 }
