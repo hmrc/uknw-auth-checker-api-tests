@@ -1,7 +1,7 @@
 import sbt.*
 
 object Dependencies {
-  private val bootstrapVersion = "9.13.0"
+  private val bootstrapVersion = "9.15.0"
 
   val test: Seq[ModuleID] = Seq(
     "org.commonmark"        % "commonmark"             % "0.24.0"         % Test,
