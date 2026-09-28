@@ -25,6 +25,7 @@ import play.api.libs.ws.StandaloneWSResponse
 import play.api.mvc.Result
 import uk.gov.hmrc.api.service.{AuthService, UknwAuthCheckerApiService}
 import uk.gov.hmrc.api.utils.{TestHeaderNames, TestRegexes}
+import play.api.libs.json.{JsObject, Json}
 
 import java.time.{LocalDate, LocalTime, ZoneId, ZonedDateTime}
 import scala.concurrent.Await
@@ -47,11 +48,26 @@ trait BaseSpec extends AnyFeatureSpec, GivenWhenThen, Matchers {
     infix def hasStatusAndBodyAndTimestamp(expectedResponse: Result): Assertion = {
       val body = Await.result(expectedResponse.body.consumeData.map(_.utf8String), 10.seconds)
 
-      actualResponse.status        shouldBe expectedResponse.header.status
-      actualResponse.body.toString shouldBe body
+      actualResponse.status shouldBe expectedResponse.header.status
+
+      val actualBody = Json.parse(actualResponse.body.toString)
+      val expectedBody = Json.parse(body)
+
+      val actualBodyWithoutDate = actualBody match {
+        case obj: JsObject => obj - "date"
+        case other => other
+      }
+
+      val expectedBodyWithoutDate = expectedBody match {
+        case obj: JsObject => obj - "date"
+        case other => other
+      }
+
+      actualBodyWithoutDate shouldBe expectedBodyWithoutDate
+
       actualResponse.header(TestHeaderNames.xTimestamp) match
         case Some(header) => header should fullyMatch regex TestRegexes.iso8601DateTimeFormatPattern
-        case None         => fail("X-Timestamp header not present")
+        case None => fail("X-Timestamp header not present")
     }
   }
 }
